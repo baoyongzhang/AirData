@@ -21,25 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata;
+package com.baoyz.airdata.utils;
+
+import com.baoyz.airdata.annotation.ColumnIgnore;
+
+import java.util.Set;
+
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/5.
  */
-class TextUtils {
+public class Utils {
 
-    public static String join(CharSequence delimiter, Iterable tokens) {
-        StringBuilder sb = new StringBuilder();
-        boolean firstTime = true;
-        for (Object token: tokens) {
-            if (firstTime) {
-                firstTime = false;
-            } else {
-                sb.append(delimiter);
-            }
-            sb.append(token);
-        }
-        return sb.toString();
+    public static boolean isPublic(VariableElement element) {
+        return element.getModifiers().contains(Modifier.PUBLIC);
+    }
+
+    public static boolean isValid(VariableElement element) {
+        Set<Modifier> modifiers = element.getModifiers();
+        return !modifiers.contains(Modifier.STATIC)
+                && !modifiers.contains(Modifier.FINAL)
+                && !modifiers.contains(Modifier.TRANSIENT)
+                && element.getAnnotation(ColumnIgnore.class) == null;
     }
 }

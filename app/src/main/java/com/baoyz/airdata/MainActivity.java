@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.baoyz.actionsheet.ActionSheet;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            ActionSheet.createBuilder(this, getSupportFragmentManager()).setCancelableOnTouchOutside(true).setCancelButtonTitle("取消").setOtherButtonTitles("设置1", "设置2", "设置3").show();
             return true;
         }
 

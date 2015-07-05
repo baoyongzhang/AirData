@@ -21,19 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata;
+package com.baoyz.airdata.handler;
+
+import java.util.Set;
+
+import javax.lang.model.element.TypeElement;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/6/30.
  */
-public abstract class AirAbstractDatabase {
+public class TableHandler implements IHandler {
 
-    public String getName() {
-        return null;
-    }
+    @Override
+    public void handle(Set<? extends TypeElement> elements) {
 
-    public int getVersion() {
-        return -1;
     }
 }

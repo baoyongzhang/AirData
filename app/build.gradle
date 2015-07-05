@@ -24,4 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     provided project(':compiler')
     compile project(':core')
+    compile 'com.baoyz.actionsheet:library:1.1.0'
 }
