@@ -47,7 +47,7 @@ public class ColumnInfo {
         if (Utils.isPublic(columnElement)) {
             setGetter(simpleName);
         } else {
-            setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString() + simpleName.substring(1));
+            setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
         }
     }
 

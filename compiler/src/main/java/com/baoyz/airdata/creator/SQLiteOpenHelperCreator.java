@@ -72,7 +72,7 @@ public class SQLiteOpenHelperCreator {
 
     private void generate() {
         // generate SQLiteOpenHelper
-        MethodSpec constructor = MethodSpec.methodBuilder("main")
+        MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get("android.content", "Context"), "context")
                 .addStatement("super(context, $S, null, $L)", name, version)
@@ -104,7 +104,7 @@ public class SQLiteOpenHelperCreator {
 
         String packageName = qualifiedName
                 .substring(0, qualifiedName.lastIndexOf("."));
-        String className = qualifiedName.substring(packageName.length() + 1) + "Helper";
+        String className = qualifiedName.substring(packageName.length() + 1) + "$$Helper";
 
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
@@ -124,55 +124,11 @@ public class SQLiteOpenHelperCreator {
 
         LogUtils.debug(javaFile.toString());
 
-//        StringBuilder sb = new StringBuilder();
-//        String tableDefinition = "CREATE TABLE IF NOT EXISTS %s (%s);";
-//        for (TableInfo table : tables) {
-//            String sql = String.format(tableDefinition, table.getName(), table.getColumnDefinitions());
-//            log(sql);
-//            // 创建表的sql
-//            sb.append("db.execSQL(\"").append(sql).append("\");\n");
-//
-//            // insert的方法
-//
-//        }
-//
-//
-//        String helperDefinition = "package " + packageName + ";\n" +
-//                "\n" +
-//                "import android.content.Context;\n" +
-//                "import android.database.sqlite.SQLiteDatabase;\n" +
-//                "import android.database.sqlite.SQLiteOpenHelper;" +
-//                "\n" +
-//                "public class " + className + " extends SQLiteOpenHelper {\n" +
-//                "\n" +
-//                "    public " + className + "(Context context) {\n" +
-//                "        super(context, \"" + name + "\", null, " + version + ");\n" +
-//                "    }\n" +
-//                "\n" +
-//                "    @Override\n" +
-//                "    public void onCreate(SQLiteDatabase db) {\n" +
-//                "        " + sb.toString() +
-//                "    }\n" +
-//                "\n" +
-//                "    @Override\n" +
-//                "    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {\n" +
-//                "\n" +
-//                "    }\n" +
-//                "}";
-//        log(helperDefinition);
-//        String fullName = packageName + "." + className;
-//        try {
-//            JavaFileObject jfo = filer.createSourceFile(
-//                    fullName, element);
-//            Writer writer = jfo.openWriter();
-//            writer.write(helperDefinition);
-//            writer.flush();
-//            writer.close();
-//            log("Create " + fullName + " success");
-//        } catch (IOException e) {
-//            log("Create " + fullName + " failed");
-//            e.printStackTrace();
-//        }
+        for (TableInfo table : tables) {
+            DAOCreator daoCreator = new DAOCreator(table, filer);
+            daoCreator.create();
+        }
+
     }
 
     private void processTables(Set<? extends TypeElement> tableElements) {

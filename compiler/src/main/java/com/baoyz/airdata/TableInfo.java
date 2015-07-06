@@ -39,7 +39,7 @@ public class TableInfo {
 
     public static final String TABLE_DEFINITION = "CREATE TABLE IF NOT EXISTS %s (%s);";
 
-    private String className;
+    private String qualifiedName;
     private String name;
     private List<ColumnInfo> columns;
 
@@ -51,7 +51,8 @@ public class TableInfo {
         } else {
             name = table.name();
         }
-        className = tableElement.getQualifiedName().toString();
+        qualifiedName = tableElement.getQualifiedName().toString();
+
     }
 
     public void addColumn(ColumnInfo column) {
@@ -80,12 +81,12 @@ public class TableInfo {
         return TextUtils.join(",", getColumns());
     }
 
-    public String getClassName() {
-        return className;
+    public String getQualifiedName() {
+        return qualifiedName;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setQualifiedName(String qualifiedName) {
+        this.qualifiedName = qualifiedName;
     }
 
     public String getTableDefinition(){

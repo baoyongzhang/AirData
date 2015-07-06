@@ -25,4 +25,5 @@ dependencies {
     provided project(':compiler')
     compile project(':core')
     compile 'com.baoyz.actionsheet:library:1.1.0'
+    compile 'com.squareup:javapoet:1.1.0'
 }

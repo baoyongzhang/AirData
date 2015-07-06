@@ -28,19 +28,93 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.baoyz.airdata.model.Person;
+import com.baoyz.airdata.utils.LogUtils;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+
+import java.io.IOException;
+import java.lang.reflect.Modifier;
 
 public class AirSQLHelper {
 
+    public static final String TABLE_NAME = "person";
+
     public SQLiteDatabase database;
+
+    public AirSQLHelper(SQLiteDatabase database) {
+        this.database = database;
+    }
 
     public long insert(Person bean) {
         ContentValues values = new ContentValues();
         values.put("name", bean.getName());
-        return database.insert("person", null, values);
+        values.put("age", bean.getAge());
+        return database.insert(TABLE_NAME, null, values);
+    }
+
+    public int delete(Person bean) {
+        return database.delete(TABLE_NAME, "id=?", new String[]{String.valueOf(bean.getId())});
+    }
+
+    public int update(Person bean) {
+        ContentValues values = new ContentValues();
+        values.put("name", bean.getName());
+        values.put("age", bean.getAge());
+        return database.update(TABLE_NAME, values, "id=?", new String[]{String.valueOf(bean.getId())});
     }
 
     public Cursor query(Person person) {
-        return database.query("person", null, null, null, null, null, null);
+        return database.query(TABLE_NAME, null, null, null, null, null, null);
+    }
+
+    public static void main(String[] args) {
+        MethodSpec constructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "db")
+                .addStatement("this.$T = $T", "database", "db")
+                .build();
+
+        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("insert")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+
+        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+
+        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+
+        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get("android.database", "Cursor"))
+                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+
+
+        TypeSpec typeSpec = TypeSpec.classBuilder("Person" + "$$DAO")
+                .addModifiers(Modifier.PUBLIC)
+                .addMethod(constructor)
+                .addMethod(insertBuilder.build())
+                .addMethod(deleteBuilder.build())
+                .addMethod(updateBuilder.build())
+                .addMethod(queryBuilder.build())
+                .build();
+
+        JavaFile javaFile = JavaFile.builder("com.baoyz.airdata", typeSpec)
+                .build();
+
+        try {
+            javaFile.writeTo(System.out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
