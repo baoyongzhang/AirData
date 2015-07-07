@@ -113,6 +113,7 @@ public class DAOCreator {
 //                .addMethod(updateBuilder.build())
 //                .addMethod(queryBuilder.build())
                 .addField(ClassName.get(String.class), "TABLE_NAME", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .build();
 
         JavaFile javaFile = JavaFile.builder(qualifiedName, typeSpec)

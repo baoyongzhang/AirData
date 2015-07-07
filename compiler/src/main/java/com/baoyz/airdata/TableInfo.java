@@ -92,4 +92,18 @@ public class TableInfo {
     public String getTableDefinition(){
         return String.format(TABLE_DEFINITION, getName(), getColumnDefinitions());
     }
+
+    public String getPackageName(){
+        return qualifiedName
+                .substring(0, qualifiedName.lastIndexOf("."));
+    }
+
+    public String getDaoClassName(){
+        return getClassName() + "$$DAO";
+    }
+
+    public String getClassName(){
+        return qualifiedName.substring(getPackageName().length() + 1);
+    }
+
 }

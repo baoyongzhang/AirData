@@ -129,6 +129,9 @@ public class SQLiteOpenHelperCreator {
             daoCreator.create();
         }
 
+        DatabaseHelperCreator databaseHelperCreator = new DatabaseHelperCreator(tables, filer);
+        databaseHelperCreator.create();
+
     }
 
     private void processTables(Set<? extends TypeElement> tableElements) {
