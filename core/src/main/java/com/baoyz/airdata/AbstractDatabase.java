@@ -23,6 +23,11 @@
  */
 package com.baoyz.airdata;
 
+import android.app.Application;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
@@ -31,7 +36,32 @@ import java.util.Objects;
  */
 public abstract class AbstractDatabase {
 
+    AirDatabaseHelper mDatabaseHelper;
+    private Context mContext;
 
+    public AbstractDatabase(Context context) {
+        if (!(context instanceof Application)) {
+            // TODO throw exception
+        }
+        mContext = context;
+        try {
+            mDatabaseHelper = (AirDatabaseHelper) Class.forName("com.baoyz.airdata.AirDatabaseHelperImpl").getConstructor(Context.class).newInstance(mContext);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SQLiteDatabase getDatabase() {
+        return mDatabaseHelper.getDatabase();
+    }
 
     public String getName() {
         return null;
@@ -41,12 +71,12 @@ public abstract class AbstractDatabase {
         return 1;
     }
 
-    public void query(Class clazz){
+    public void query(Class clazz) {
 
     }
 
-    public void insert(Object obj) {
-
+    public long save(Object obj) {
+        return mDatabaseHelper.save(obj);
     }
 
     public void delete(Objects obj) {

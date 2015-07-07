@@ -66,8 +66,10 @@ public class SQLiteOpenHelperCreator {
         Set<? extends Element> tableElements = roundEnv.getElementsAnnotatedWith(Table.class);
         processTables((Set<? extends TypeElement>) tableElements);
         Set<? extends Element> databaseElements = roundEnv.getElementsAnnotatedWith(Database.class);
-        processDatabases((Set<? extends TypeElement>) databaseElements);
-        generate();
+        if (databaseElements != null && databaseElements.size() > 0) {
+            processDatabases((Set<? extends TypeElement>) databaseElements);
+            generate();
+        }
     }
 
     private void generate() {
@@ -93,7 +95,7 @@ public class SQLiteOpenHelperCreator {
 
         MethodSpec onCreate = onCreateBuilder.build();
 
-        MethodSpec onUpgrade = MethodSpec.methodBuilder("onCreate")
+        MethodSpec onUpgrade = MethodSpec.methodBuilder("onUpgrade")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .returns(TypeName.VOID)
@@ -107,6 +109,7 @@ public class SQLiteOpenHelperCreator {
         String className = qualifiedName.substring(packageName.length() + 1) + "$$Helper";
 
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
+                .superclass(ClassName.get("android.database.sqlite", "SQLiteOpenHelper"))
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(onCreate)
@@ -129,7 +132,7 @@ public class SQLiteOpenHelperCreator {
             daoCreator.create();
         }
 
-        DatabaseHelperCreator databaseHelperCreator = new DatabaseHelperCreator(tables, filer);
+        DatabaseHelperCreator databaseHelperCreator = new DatabaseHelperCreator(tables, filer, packageName, className);
         databaseHelperCreator.create();
 
     }

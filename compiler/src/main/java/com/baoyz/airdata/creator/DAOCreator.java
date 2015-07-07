@@ -28,11 +28,13 @@ import com.baoyz.airdata.ColumnInfo;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.utils.LogUtils;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.processing.Filer;
@@ -82,7 +84,7 @@ public class DAOCreator {
                 .addStatement("this.$L = $L", "database", "db")
                 .build();
 
-        ClassName person = ClassName.get("com.baoyz.airdata.model", "Person");
+        ClassName person = ClassName.get(table.getPackageName(), table.getClassName());
         MethodSpec insertMethod = generatorInsertMethod(person);
 
 //        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
@@ -105,6 +107,10 @@ public class DAOCreator {
                 .substring(0, qualifiedName.lastIndexOf("."));
         String className = qualifiedName.substring(packageName.length() + 1) + "$$DAO";
 
+        FieldSpec tableNameField = FieldSpec
+                .builder(ClassName.get(String.class), "TABLE_NAME", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                .initializer("$S", table.getName()).build();
+
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
@@ -112,11 +118,11 @@ public class DAOCreator {
 //                .addMethod(deleteBuilder.build())
 //                .addMethod(updateBuilder.build())
 //                .addMethod(queryBuilder.build())
-                .addField(ClassName.get(String.class), "TABLE_NAME", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                .addField(tableNameField)
                 .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .build();
 
-        JavaFile javaFile = JavaFile.builder(qualifiedName, typeSpec)
+        JavaFile javaFile = JavaFile.builder(table.getPackageName(), typeSpec)
                 .build();
 
         try {
@@ -134,6 +140,31 @@ public class DAOCreator {
                 .returns(TypeName.LONG)
                 .addParameter(person, "bean")
                 .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"));
+
+        List<ColumnInfo> columns = table.getColumns();
+        for (ColumnInfo column : columns) {
+            insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
+        }
+
+        insertBuilder.addStatement("return database.insert(TABLE_NAME, null, values)");
+        return insertBuilder.build();
+    }
+
+    private MethodSpec generatorQueryMethod(ClassName person) {
+        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("query")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get(List.class))
+                .addStatement("$T cursor = database.query(TABLE_NAME, null, null, null, null, null, null)", ClassName.get("android.database", "Cursor"))
+                .addCode("");
+
+        List list = new ArrayList();
+        while (cursor.moveToNext()) {
+            Person bean = new Person();
+            bean.setId(cursor.getInt(0));
+            bean.setName(cursor.getString(1));
+            int age = cursor.getInt(2);
+            sb.append(id).append("\t").append(name).append("\t").append(age).append("\n");
+        }
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {

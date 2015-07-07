@@ -23,18 +23,18 @@
  */
 package com.baoyz.airdata;
 
-import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
-import com.baoyz.airdata.annotation.Database;
+import java.util.List;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/7.
  */
-@Database(name = "mydatabase", version = 1)
-public class MyDatabase extends AbstractDatabase{
+public interface AirDatabaseHelper {
 
-    public MyDatabase(Context context) {
-        super(context);
-    }
+    long save(Object obj);
+    <T> List<T> query(Class<T> clazz);
+    void destory();
+    SQLiteDatabase getDatabase();
 }

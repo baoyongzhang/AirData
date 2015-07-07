@@ -28,15 +28,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.baoyz.airdata.model.Person;
-import com.baoyz.airdata.utils.LogUtils;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
-import java.io.IOException;
-import java.lang.reflect.Modifier;
 
 public class AirSQLHelper {
 
@@ -71,50 +62,50 @@ public class AirSQLHelper {
     }
 
     public static void main(String[] args) {
-        MethodSpec constructor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "db")
-                .addStatement("this.$T = $T", "database", "db")
-                .build();
-
-        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("insert")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
-                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
-
-        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.INT)
-                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
-
-        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.INT)
-                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
-
-        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(ClassName.get("android.database", "Cursor"))
-                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
-
-
-        TypeSpec typeSpec = TypeSpec.classBuilder("Person" + "$$DAO")
-                .addModifiers(Modifier.PUBLIC)
-                .addMethod(constructor)
-                .addMethod(insertBuilder.build())
-                .addMethod(deleteBuilder.build())
-                .addMethod(updateBuilder.build())
-                .addMethod(queryBuilder.build())
-                .build();
-
-        JavaFile javaFile = JavaFile.builder("com.baoyz.airdata", typeSpec)
-                .build();
-
-        try {
-            javaFile.writeTo(System.out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        MethodSpec constructor = MethodSpec.constructorBuilder()
+//                .addModifiers(Modifier.PUBLIC)
+//                .addParameter(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "db")
+//                .addStatement("this.$T = $T", "database", "db")
+//                .build();
+//
+//        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("insert")
+//                .addModifiers(Modifier.PUBLIC)
+//                .returns(TypeName.LONG)
+//                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+//
+//        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
+//                .addModifiers(Modifier.PUBLIC)
+//                .returns(TypeName.INT)
+//                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+//
+//        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
+//                .addModifiers(Modifier.PUBLIC)
+//                .returns(TypeName.INT)
+//                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+//
+//        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
+//                .addModifiers(Modifier.PUBLIC)
+//                .returns(ClassName.get("android.database", "Cursor"))
+//                .addParameter(ClassName.get("com.baoyz.airdata.model", "Person"), "bean");
+//
+//
+//        TypeSpec typeSpec = TypeSpec.classBuilder("Person" + "$$DAO")
+//                .addModifiers(Modifier.PUBLIC)
+//                .addMethod(constructor)
+//                .addMethod(insertBuilder.build())
+//                .addMethod(deleteBuilder.build())
+//                .addMethod(updateBuilder.build())
+//                .addMethod(queryBuilder.build())
+//                .build();
+//
+//        JavaFile javaFile = JavaFile.builder("com.baoyz.airdata", typeSpec)
+//                .build();
+//
+//        try {
+//            javaFile.writeTo(System.out);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }
