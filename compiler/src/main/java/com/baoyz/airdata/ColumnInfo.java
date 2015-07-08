@@ -27,6 +27,7 @@ import com.baoyz.airdata.annotation.Column;
 import com.baoyz.airdata.utils.Utils;
 
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * AirData
@@ -37,6 +38,8 @@ public class ColumnInfo {
     private String type;
     private String name;
     private String getter;
+    private String setter;
+    private TypeMirror typeMirror;
 
     public ColumnInfo(VariableElement columnElement) {
         setName(getColumnName(columnElement));
@@ -46,9 +49,12 @@ public class ColumnInfo {
         String simpleName = columnElement.getSimpleName().toString();
         if (Utils.isPublic(columnElement)) {
             setGetter(simpleName);
+            setSetter(simpleName + " = $L");
         } else {
             setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
+            setSetter("set" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "($L)");
         }
+        typeMirror = columnElement.asType();
     }
 
     private String getColumnName(VariableElement element) {
@@ -94,5 +100,21 @@ public class ColumnInfo {
 
     public void setGetter(String getter) {
         this.getter = getter;
+    }
+
+    public String getSetter() {
+        return setter;
+    }
+
+    public void setSetter(String setter) {
+        this.setter = setter;
+    }
+
+    public TypeMirror getTypeMirror() {
+        return typeMirror;
+    }
+
+    public void setTypeMirror(TypeMirror typeMirror) {
+        this.typeMirror = typeMirror;
     }
 }

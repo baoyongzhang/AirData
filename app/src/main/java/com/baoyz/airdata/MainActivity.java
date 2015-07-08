@@ -1,12 +1,13 @@
 package com.baoyz.airdata;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.baoyz.airdata.model.Person;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,14 +34,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void query(){
-        Cursor cursor = mDatabase.getDatabase().query("Person", null, null, null, null, null, null);
+//        Cursor cursor = mDatabase.getDatabase().query("Person", null, null, null, null, null, null);
+//        StringBuilder sb = new StringBuilder();
+//        while (cursor.moveToNext()) {
+//            int id = cursor.getInt(0);
+//            String name = cursor.getString(1);
+//            int age = cursor.getInt(2);
+//            sb.append(id).append("\t").append(name).append("\t").append(age).append("\n");
+//        }
+
+        List<Person> list = mDatabase.query(Person.class);
         StringBuilder sb = new StringBuilder();
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(0);
-            String name = cursor.getString(1);
-            int age = cursor.getInt(2);
-            sb.append(id).append("\t").append(name).append("\t").append(age).append("\n");
+        for (Person person : list) {
+            sb.append(person.getId()).append("\t").append(person.getName()).append("\t").append(person.getAge()).append("\n");
         }
+
         mResultTv.setText(sb.toString());
     }
 }

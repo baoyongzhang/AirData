@@ -28,6 +28,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -71,8 +72,8 @@ public abstract class AbstractDatabase {
         return 1;
     }
 
-    public void query(Class clazz) {
-
+    public <T> List<T> query(Class<T> clazz) {
+        return mDatabaseHelper.query(clazz);
     }
 
     public long save(Object obj) {

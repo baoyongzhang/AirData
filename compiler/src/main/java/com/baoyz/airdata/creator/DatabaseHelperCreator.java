@@ -57,7 +57,7 @@ public class DatabaseHelperCreator {
         this.className = className;
     }
 
-    public void create(){
+    public void create() {
 
         // dao fields
         List<String> daoFields = new ArrayList<>();
@@ -68,41 +68,23 @@ public class DatabaseHelperCreator {
                 .addStatement("this.helper = new $T(context)", ClassName.get(packageName, className))
                 .addStatement("this.database = this.helper.getWritableDatabase()");
 
+
+        for (TableInfo table : tables) {
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+            constructorBuilder.addStatement("this.$L = new $L(this.database)", daoField, table.getDaoClassName());
+        }
+
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder("AirDatabaseHelperImpl")
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(AirDatabaseHelper.class))
                 .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .addField(ClassName.get(packageName, className), "helper", Modifier.PRIVATE);
 
-        // create save method
+        // generate save method
+        typeSpecBuilder.addMethod(generateSaveMethod(typeSpecBuilder));
 
-
-        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("save")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
-                .addParameter(ClassName.get(Object.class), "bean");
-
-        for (TableInfo table : tables) {
-            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
-
-            constructorBuilder.addStatement("this.$L = new $L(this.database)", daoField, table.getDaoClassName());
-
-            typeSpecBuilder.addField(ClassName.get(table.getPackageName(), table.getDaoClassName()), daoField, Modifier.PRIVATE);
-            MethodSpec methodSpec = MethodSpec.methodBuilder("save")
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.LONG)
-                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
-                    .addStatement("return $L.insert(bean)", daoField)
-                    .build();
-            typeSpecBuilder.addMethod(methodSpec);
-
-            saveMethodBuidler.addStatement("if(bean instanceof $L) return save(($L)bean)", table.getClassName(), table.getClassName());
-        }
-
-        saveMethodBuidler.addStatement("return 0");
-
-        typeSpecBuilder.addMethod(saveMethodBuidler.build());
+        // generate query method
+        typeSpecBuilder.addMethod(generateQueryMethod(typeSpecBuilder));
 
         // destory method
         MethodSpec destoryMethod = MethodSpec.methodBuilder("destory")
@@ -134,5 +116,57 @@ public class DatabaseHelperCreator {
 
         LogUtils.debug(javaFile.toString());
 
+    }
+
+    private MethodSpec generateSaveMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("save")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(ClassName.get(Object.class), "bean");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+
+            typeSpecBuilder.addField(ClassName.get(table.getPackageName(), table.getDaoClassName()), daoField, Modifier.PRIVATE);
+            MethodSpec methodSpec = MethodSpec.methodBuilder("save")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.LONG)
+                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
+                    .addStatement("return $L.insert(bean)", daoField)
+                    .build();
+            typeSpecBuilder.addMethod(methodSpec);
+
+            saveMethodBuidler.addStatement("if(bean instanceof $L) return save(($L)bean)", table.getClassName(), table.getClassName());
+        }
+
+        saveMethodBuidler.addStatement("return 0");
+        return saveMethodBuidler.build();
+    }
+
+    private MethodSpec generateQueryMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder queryMethodBuidler = MethodSpec.methodBuilder("query")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get(List.class))
+                .addParameter(ClassName.get(Class.class), "clazz");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+            MethodSpec methodSpec = MethodSpec.methodBuilder("query")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.get(List.class))
+                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
+                    .addStatement("return $L.query()", daoField)
+                    .build();
+            typeSpecBuilder.addMethod(methodSpec);
+
+            queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.query()", table.getClassName(), daoField);
+        }
+
+        queryMethodBuidler.addStatement("return null");
+        return queryMethodBuidler.build();
     }
 }

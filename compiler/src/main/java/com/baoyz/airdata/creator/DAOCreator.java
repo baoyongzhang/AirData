@@ -34,6 +34,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,10 +49,12 @@ public class DAOCreator {
 
     private TableInfo table;
     private Filer filer;
+    private ClassName beanClassName;
 
     public DAOCreator(TableInfo table, Filer filer) {
         this.table = table;
         this.filer = filer;
+        beanClassName = ClassName.get(table.getPackageName(), table.getClassName());
     }
 
 
@@ -84,8 +87,7 @@ public class DAOCreator {
                 .addStatement("this.$L = $L", "database", "db")
                 .build();
 
-        ClassName person = ClassName.get(table.getPackageName(), table.getClassName());
-        MethodSpec insertMethod = generatorInsertMethod(person);
+        MethodSpec insertMethod = generatorInsertMethod(beanClassName);
 
 //        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
 //                .addModifiers(Modifier.PUBLIC)
@@ -115,6 +117,8 @@ public class DAOCreator {
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(insertMethod)
+                .addMethod(generatorQueryMethod())
+                .addMethod(generatorFillDataMethod())
 //                .addMethod(deleteBuilder.build())
 //                .addMethod(updateBuilder.build())
 //                .addMethod(queryBuilder.build())
@@ -150,28 +154,39 @@ public class DAOCreator {
         return insertBuilder.build();
     }
 
-    private MethodSpec generatorQueryMethod(ClassName person) {
-        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("query")
+    private MethodSpec generatorQueryMethod() {
+        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.get(List.class))
                 .addStatement("$T cursor = database.query(TABLE_NAME, null, null, null, null, null, null)", ClassName.get("android.database", "Cursor"))
                 .addCode("");
+        queryBuilder.addStatement("$T list = new $T()", ArrayList.class, ArrayList.class);
+        queryBuilder.addCode("while (cursor.moveToNext()) {list.add(fillData(cursor));}");
+        queryBuilder.addStatement("return list");
+        return queryBuilder.build();
+    }
 
-        List list = new ArrayList();
-        while (cursor.moveToNext()) {
-            Person bean = new Person();
-            bean.setId(cursor.getInt(0));
-            bean.setName(cursor.getString(1));
-            int age = cursor.getInt(2);
-            sb.append(id).append("\t").append(name).append("\t").append(age).append("\n");
-        }
+    private MethodSpec generatorFillDataMethod() {
+        MethodSpec.Builder fillDataMethod = MethodSpec.methodBuilder("fillData")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get("android.database", "Cursor"), "cursor")
+                .returns(beanClassName)
+                .addStatement("$T bean = new $T()", beanClassName, beanClassName);
 
         List<ColumnInfo> columns = table.getColumns();
-        for (ColumnInfo column : columns) {
-            insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
+        for (int i = 0; i < columns.size(); i++) {
+            ColumnInfo column = columns.get(i);
+            // TODO 暂时全部使用getString
+            String type;
+            if ("int".equals(column.getTypeMirror().toString())) {
+                type = "Int";
+            } else {
+                type = "String";
+            }
+            fillDataMethod.addStatement("bean." + column.getSetter(), "cursor.get" + type + "(" + i + ")");
         }
+        fillDataMethod.addStatement("return bean");
 
-        insertBuilder.addStatement("return database.insert(TABLE_NAME, null, values)");
-        return insertBuilder.build();
+        return fillDataMethod.build();
     }
 }
