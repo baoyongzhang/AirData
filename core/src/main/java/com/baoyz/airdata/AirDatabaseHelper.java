@@ -34,6 +34,8 @@ import java.util.List;
 public interface AirDatabaseHelper {
 
     long save(Object obj);
+    long delete(Object obj);
+    long update(Object obj);
     <T> List<T> query(Class<T> clazz);
     void destory();
     SQLiteDatabase getDatabase();
