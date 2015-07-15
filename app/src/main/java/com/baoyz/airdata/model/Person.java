@@ -23,6 +23,7 @@
  */
 package com.baoyz.airdata.model;
 
+import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 
 /**
@@ -32,6 +33,7 @@ import com.baoyz.airdata.annotation.Table;
 @Table
 public class Person {
 
+    @PrimaryKey
     private int id;
     private String name;
     private int age;

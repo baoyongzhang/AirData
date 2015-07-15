@@ -88,6 +88,7 @@ public class DAOCreator {
                 .build();
 
         MethodSpec insertMethod = generatorInsertMethod(beanClassName);
+        MethodSpec updateMethod = generatorUpdateMethod(beanClassName);
 
 //        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
 //                .addModifiers(Modifier.PUBLIC)
@@ -117,6 +118,7 @@ public class DAOCreator {
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(insertMethod)
+                .addMethod(updateMethod)
                 .addMethod(generatorQueryMethod())
                 .addMethod(generatorFillDataMethod())
 //                .addMethod(deleteBuilder.build())
@@ -151,6 +153,22 @@ public class DAOCreator {
         }
 
         insertBuilder.addStatement("return database.insert(TABLE_NAME, null, values)");
+        return insertBuilder.build();
+    }
+
+    private MethodSpec generatorUpdateMethod(ClassName person) {
+        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("update")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(person, "bean")
+                .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"));
+
+        List<ColumnInfo> columns = table.getColumns();
+        for (ColumnInfo column : columns) {
+            insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
+        }
+
+        insertBuilder.addStatement("return database.update(TABLE_NAME, values, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
         return insertBuilder.build();
     }
 

@@ -21,44 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata.model;
+package com.baoyz.airdata.annotation;
 
-import com.baoyz.airdata.annotation.PrimaryKey;
-import com.baoyz.airdata.annotation.Table;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/15.
  */
-@Table
-public class Student {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.FIELD)
+public @interface PrimaryKey {
 
-    @PrimaryKey
-    private int id;
-    private String name;
-    private int score;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
 }

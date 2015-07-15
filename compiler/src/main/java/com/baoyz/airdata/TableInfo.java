@@ -42,6 +42,7 @@ public class TableInfo {
     private String qualifiedName;
     private String name;
     private List<ColumnInfo> columns;
+    private ColumnInfo primaryKeyColumn;
 
     public TableInfo(TypeElement tableElement) {
         Table table = tableElement.getAnnotation(Table.class);
@@ -106,4 +107,11 @@ public class TableInfo {
         return qualifiedName.substring(getPackageName().length() + 1);
     }
 
+    public ColumnInfo getPrimaryKeyColumn() {
+        return primaryKeyColumn;
+    }
+
+    public void setPrimaryKeyColumn(ColumnInfo primaryKeyColumn) {
+        this.primaryKeyColumn = primaryKeyColumn;
+    }
 }

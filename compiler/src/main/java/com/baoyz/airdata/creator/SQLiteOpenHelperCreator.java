@@ -26,6 +26,7 @@ package com.baoyz.airdata.creator;
 import com.baoyz.airdata.ColumnInfo;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.annotation.Database;
+import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 import com.baoyz.airdata.utils.LogUtils;
 import com.baoyz.airdata.utils.Utils;
@@ -153,6 +154,9 @@ public class SQLiteOpenHelperCreator {
                     VariableElement columnElement = (VariableElement) element;
                     ColumnInfo column = new ColumnInfo(columnElement);
                     table.addColumn(column);
+                    if (columnElement.getAnnotation(PrimaryKey.class) != null) {
+                        table.setPrimaryKeyColumn(column);
+                    }
                 }
             }
         }
