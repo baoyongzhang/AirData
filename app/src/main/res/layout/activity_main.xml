@@ -15,6 +15,18 @@
         android:text="save person"
         android:onClick="savePerson"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="delete person"
+        android:onClick="deletePerson"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="update person"
+        android:onClick="updatePerson"/>
+
     <TextView
         android:id="@+id/tv_result"
         android:layout_width="match_parent"

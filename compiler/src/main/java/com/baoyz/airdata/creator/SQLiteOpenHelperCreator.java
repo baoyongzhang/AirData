@@ -155,6 +155,7 @@ public class SQLiteOpenHelperCreator {
                     ColumnInfo column = new ColumnInfo(columnElement);
                     table.addColumn(column);
                     if (columnElement.getAnnotation(PrimaryKey.class) != null) {
+                        column.setPrimaryKey(true);
                         table.setPrimaryKeyColumn(column);
                     }
                 }

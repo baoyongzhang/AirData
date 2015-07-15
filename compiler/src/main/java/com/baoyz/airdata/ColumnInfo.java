@@ -40,6 +40,7 @@ public class ColumnInfo {
     private String getter;
     private String setter;
     private TypeMirror typeMirror;
+    private boolean primaryKey;
 
     public ColumnInfo(VariableElement columnElement) {
         setName(getColumnName(columnElement));
@@ -86,7 +87,11 @@ public class ColumnInfo {
 
     public String getDefinition() {
         StringBuilder definition = new StringBuilder();
-        return definition.append(name).append(" ").append(type).toString();
+        definition.append(name).append(" ").append(type);
+        if (isPrimaryKey()) {
+            definition.append(" PRIMARY KEY AUTOINCREMENT");
+        }
+        return definition.toString();
     }
 
     @Override
@@ -116,5 +121,13 @@ public class ColumnInfo {
 
     public void setTypeMirror(TypeMirror typeMirror) {
         this.typeMirror = typeMirror;
+    }
+
+    public boolean isPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
     }
 }

@@ -89,6 +89,7 @@ public class DAOCreator {
 
         MethodSpec insertMethod = generatorInsertMethod(beanClassName);
         MethodSpec updateMethod = generatorUpdateMethod(beanClassName);
+        MethodSpec deleteMethod = generatorDeleteMethod(beanClassName);
 
 //        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
 //                .addModifiers(Modifier.PUBLIC)
@@ -119,6 +120,7 @@ public class DAOCreator {
                 .addMethod(constructor)
                 .addMethod(insertMethod)
                 .addMethod(updateMethod)
+                .addMethod(deleteMethod)
                 .addMethod(generatorQueryMethod())
                 .addMethod(generatorFillDataMethod())
 //                .addMethod(deleteBuilder.build())
@@ -165,10 +167,21 @@ public class DAOCreator {
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
+            if (column.isPrimaryKey())
+                continue;
             insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
         }
 
         insertBuilder.addStatement("return database.update(TABLE_NAME, values, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
+        return insertBuilder.build();
+    }
+
+    private MethodSpec generatorDeleteMethod(ClassName person) {
+        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("delete")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(person, "bean")
+                .addStatement("return database.delete(TABLE_NAME, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
         return insertBuilder.build();
     }
 

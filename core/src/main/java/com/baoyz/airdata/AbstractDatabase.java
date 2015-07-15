@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * AirData
@@ -80,7 +79,11 @@ public abstract class AbstractDatabase {
         return mDatabaseHelper.save(obj);
     }
 
-    public void delete(Objects obj) {
+    public long delete(Object obj) {
+        return mDatabaseHelper.delete(obj);
+    }
 
+    public long update(Object obj) {
+        return mDatabaseHelper.update(obj);
     }
 }

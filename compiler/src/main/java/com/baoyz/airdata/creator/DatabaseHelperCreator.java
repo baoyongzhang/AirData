@@ -86,6 +86,12 @@ public class DatabaseHelperCreator {
         // generate query method
         typeSpecBuilder.addMethod(generateQueryMethod(typeSpecBuilder));
 
+        // generate update method
+        typeSpecBuilder.addMethod(generateUpdateMethod(typeSpecBuilder));
+
+        // generate delete method
+        typeSpecBuilder.addMethod(generateDeleteMethod(typeSpecBuilder));
+
         // destory method
         MethodSpec destoryMethod = MethodSpec.methodBuilder("destory")
                 .addAnnotation(Override.class)
@@ -139,6 +145,58 @@ public class DatabaseHelperCreator {
             typeSpecBuilder.addMethod(methodSpec);
 
             saveMethodBuidler.addStatement("if(bean instanceof $L) return save(($L)bean)", table.getClassName(), table.getClassName());
+        }
+
+        saveMethodBuidler.addStatement("return 0");
+        return saveMethodBuidler.build();
+    }
+
+    private MethodSpec generateUpdateMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("update")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(ClassName.get(Object.class), "bean");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+
+            MethodSpec methodSpec = MethodSpec.methodBuilder("update")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.LONG)
+                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
+                    .addStatement("return $L.update(bean)", daoField)
+                    .build();
+            typeSpecBuilder.addMethod(methodSpec);
+
+            saveMethodBuidler.addStatement("if(bean instanceof $L) return update(($L)bean)", table.getClassName(), table.getClassName());
+        }
+
+        saveMethodBuidler.addStatement("return 0");
+        return saveMethodBuidler.build();
+    }
+
+    private MethodSpec generateDeleteMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("delete")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.LONG)
+                .addParameter(ClassName.get(Object.class), "bean");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+
+            MethodSpec methodSpec = MethodSpec.methodBuilder("delete")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.LONG)
+                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
+                    .addStatement("return $L.delete(bean)", daoField)
+                    .build();
+            typeSpecBuilder.addMethod(methodSpec);
+
+            saveMethodBuidler.addStatement("if(bean instanceof $L) return delete(($L)bean)", table.getClassName(), table.getClassName());
         }
 
         saveMethodBuidler.addStatement("return 0");
