@@ -52,15 +52,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void query(){
-//        Cursor cursor = mDatabase.getDatabase().query("Person", null, null, null, null, null, null);
-//        StringBuilder sb = new StringBuilder();
-//        while (cursor.moveToNext()) {
-//            int id = cursor.getInt(0);
-//            String name = cursor.getString(1);
-//            int age = cursor.getInt(2);
-//            sb.append(id).append("\t").append(name).append("\t").append(age).append("\n");
-//        }
-
         list = mDatabase.query(Person.class);
         StringBuilder sb = new StringBuilder();
         for (Person person : list) {

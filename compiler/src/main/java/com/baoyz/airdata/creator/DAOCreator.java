@@ -57,29 +57,6 @@ public class DAOCreator {
         beanClassName = ClassName.get(table.getPackageName(), table.getClassName());
     }
 
-
-//    public long insert(Person bean) {
-//        ContentValues values = new ContentValues();
-//        values.put("name", bean.getName());
-//        values.put("age", bean.getAge());
-//        return database.insert(TABLE_NAME, null, values);
-//    }
-//
-//    public int delete(Person bean) {
-//        return database.delete(TABLE_NAME, "id=?", new String[]{String.valueOf(bean.getId())});
-//    }
-//
-//    public int update(Person bean) {
-//        ContentValues values = new ContentValues();
-//        values.put("name", bean.getName());
-//        values.put("age", bean.getAge());
-//        return database.update(TABLE_NAME, values, "id=?", new String[]{String.valueOf(bean.getId())});
-//    }
-//
-//    public Cursor query(Person person) {
-//        return database.query(TABLE_NAME, null, null, null, null, null, null);
-//    }
-
     public void create() {
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
@@ -90,21 +67,6 @@ public class DAOCreator {
         MethodSpec insertMethod = generatorInsertMethod(beanClassName);
         MethodSpec updateMethod = generatorUpdateMethod(beanClassName);
         MethodSpec deleteMethod = generatorDeleteMethod(beanClassName);
-
-//        MethodSpec.Builder deleteBuilder = MethodSpec.methodBuilder("delete")
-//                .addModifiers(Modifier.PUBLIC)
-//                .returns(TypeName.INT)
-//                .addParameter(person, "bean");
-//
-//        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
-//                .addModifiers(Modifier.PUBLIC)
-//                .returns(TypeName.INT)
-//                .addParameter(person, "bean");
-//
-//        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
-//                .addModifiers(Modifier.PUBLIC)
-//                .returns(ClassName.get("android.database", "Cursor"))
-//                .addParameter(person, "bean");
 
         String qualifiedName = table.getQualifiedName();
         String packageName = qualifiedName
@@ -123,9 +85,6 @@ public class DAOCreator {
                 .addMethod(deleteMethod)
                 .addMethod(generatorQueryMethod())
                 .addMethod(generatorFillDataMethod())
-//                .addMethod(deleteBuilder.build())
-//                .addMethod(updateBuilder.build())
-//                .addMethod(queryBuilder.build())
                 .addField(tableNameField)
                 .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .build();
