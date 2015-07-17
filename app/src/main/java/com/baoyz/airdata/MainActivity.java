@@ -31,23 +31,23 @@ public class MainActivity extends AppCompatActivity {
 
         mResultTv = (TextView) findViewById(R.id.tv_result);
 
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        View view = new View(this);
-        view.setBackgroundColor(Color.argb(0x55, 0x00, 0x00, 0x00));
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.type = WindowManager.LayoutParams.TYPE_PHONE;
-        params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.alpha = 0.3f;
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        wm.addView(view, params);
-
-        view.buildDrawingCache();
-        try {
-            view.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream("/sdcard/screen.png"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+//        View view = new View(this);
+//        view.setBackgroundColor(Color.argb(0x55, 0x00, 0x00, 0x00));
+//        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+//        params.type = WindowManager.LayoutParams.TYPE_PHONE;
+//        params.gravity = Gravity.TOP | Gravity.LEFT;
+//        params.alpha = 0.3f;
+//        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+//        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+//        wm.addView(view, params);
+//
+//        view.buildDrawingCache();
+//        try {
+//            view.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream("/sdcard/screen.png"));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void updatePerson(View view) {
@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         Person person = new Person();
         person.setAge(18);
         person.setName("李四");
+        person.setBool(true);
+        person.setD(100.2222);
+        person.setF(100.2222f);
+        person.setL(123112323);
         long id = mDatabase.save(person);
         query();
     }
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         list = mDatabase.query(Person.class);
         StringBuilder sb = new StringBuilder();
         for (Person person : list) {
-            sb.append(person.getId()).append("\t").append(person.getName()).append("\t").append(person.getAge()).append("\n");
+            sb.append(person.toString()).append("\n");
         }
 
         mResultTv.setText(sb.toString());

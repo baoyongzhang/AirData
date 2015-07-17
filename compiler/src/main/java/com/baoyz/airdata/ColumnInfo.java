@@ -56,7 +56,11 @@ public class ColumnInfo {
             setGetter(simpleName);
             setSetter(simpleName + " = $L");
         } else {
-            setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
+            if (DataType.isBoolean(typeMirror)) {
+                setGetter("is" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
+            } else {
+                setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
+            }
             setSetter("set" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "($L)");
         }
 

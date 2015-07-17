@@ -25,6 +25,7 @@ package com.baoyz.airdata.creator;
 
 
 import com.baoyz.airdata.ColumnInfo;
+import com.baoyz.airdata.ContentValuesWrapper;
 import com.baoyz.airdata.CursorWrapper;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.utils.DataType;
@@ -109,11 +110,12 @@ public class DAOCreator {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeName.LONG)
                 .addParameter(person, "bean")
-                .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"));
+                .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"))
+                .addStatement("$T valuesWrapper = $T.wrap(values)", ClassName.get(ContentValuesWrapper.class), ClassName.get(ContentValuesWrapper.class));
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
-            insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
+            insertBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
 
         insertBuilder.addStatement("return database.insert(TABLE_NAME, null, values)");
@@ -125,13 +127,14 @@ public class DAOCreator {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeName.LONG)
                 .addParameter(person, "bean")
-                .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"));
+                .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"))
+                .addStatement("$T valuesWrapper = $T.wrap(values)", ClassName.get(ContentValuesWrapper.class), ClassName.get(ContentValuesWrapper.class));
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
             if (column.isPrimaryKey())
                 continue;
-            insertBuilder.addStatement("values.put($S, bean.$L)", column.getName(), column.getGetter());
+            insertBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
 
         insertBuilder.addStatement("return database.update(TABLE_NAME, values, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());

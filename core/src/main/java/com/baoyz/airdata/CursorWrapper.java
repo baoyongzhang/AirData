@@ -55,4 +55,14 @@ public class CursorWrapper {
         return cursor.getBlob(index);
     }
 
+    public Byte[] getBytes(int index) {
+        byte[] arr = cursor.getBlob(index);
+        if (arr == null){
+            return null;
+        }
+        Byte[] bytes = new Byte[arr.length];
+        System.arraycopy(arr, 0, bytes, 0, arr.length);
+        return bytes;
+    }
+
 }

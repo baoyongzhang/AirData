@@ -1,5 +1,7 @@
 package com.baoyz.airdata.utils;
 
+import com.baoyz.airdata.serializer.ValueSerializer;
+
 import java.util.HashMap;
 
 import javax.lang.model.type.TypeMirror;
@@ -86,9 +88,13 @@ public class DataType {
             put("java.lang.Boolean", "getBoolean");
             put("java.lang.Character", "getChar");
             put("java.lang.String", "getString");
-            put("java.lang.Byte[]", "getBlob");
+            put("java.lang.Byte[]", "getBytes");
         }
     };
+
+    public static boolean isBoolean(TypeMirror type) {
+        return "boolean".equals(type.toString());
+    }
 
     public static String getTypeString(TypeMirror type) {
         SQLiteType sqLiteType = TYPE_MAP.get(type.toString());
@@ -109,5 +115,9 @@ public class DataType {
 
     public static String getCursorMethod(TypeMirror type) {
         return METHOD_MAP.get(type.toString());
+    }
+
+    public static ValueSerializer getSerializer(TypeMirror type) {
+        return null;
     }
 }

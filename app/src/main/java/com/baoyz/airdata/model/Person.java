@@ -26,7 +26,7 @@ package com.baoyz.airdata.model;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 
-import java.util.Date;
+import java.util.Arrays;
 
 /**
  * AirData
@@ -208,5 +208,30 @@ public class Person {
 
     public void setBool2(Boolean bool2) {
         this.bool2 = bool2;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", bytes=" + Arrays.toString(bytes) +
+                ", s=" + s +
+                ", b=" + b +
+                ", l=" + l +
+                ", d=" + d +
+                ", f=" + f +
+                ", c=" + c +
+                ", bool=" + bool +
+                ", i2=" + i2 +
+                ", b2=" + b2 +
+                ", s2=" + s2 +
+                ", bytes2=" + Arrays.toString(bytes2) +
+                ", l2=" + l2 +
+                ", d2=" + d2 +
+                ", c2=" + c2 +
+                ", bool2=" + bool2 +
+                '}';
     }
 }
