@@ -24,6 +24,8 @@
 package com.baoyz.airdata;
 
 import com.baoyz.airdata.annotation.Column;
+import com.baoyz.airdata.utils.DataType;
+import com.baoyz.airdata.utils.LogUtils;
 import com.baoyz.airdata.utils.Utils;
 
 import javax.lang.model.element.VariableElement;
@@ -44,8 +46,10 @@ public class ColumnInfo {
 
     public ColumnInfo(VariableElement columnElement) {
         setName(getColumnName(columnElement));
+        typeMirror = columnElement.asType();
+        LogUtils.debug("type = " + typeMirror);
         // TODO 暂时全部使用TEXT类型
-        setType("TEXT");
+        setType(DataType.getTypeString(typeMirror));
 
         String simpleName = columnElement.getSimpleName().toString();
         if (Utils.isPublic(columnElement)) {
@@ -55,7 +59,7 @@ public class ColumnInfo {
             setGetter("get" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "()");
             setSetter("set" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "($L)");
         }
-        typeMirror = columnElement.asType();
+
     }
 
     private String getColumnName(VariableElement element) {

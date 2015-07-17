@@ -26,6 +26,8 @@ package com.baoyz.airdata.model;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 
+import java.util.Date;
+
 /**
  * AirData
  * Created by baoyz on 15/6/28.
@@ -37,6 +39,24 @@ public class Person {
     private int id;
     private String name;
     private int age;
+    private byte[] bytes;
+    private short s;
+    private byte b;
+    private long l;
+    private double d;
+    private float f;
+    private char c;
+    private boolean bool;
+    private Integer i2;
+    private Byte b2;
+    private Short s2;
+    private Byte[] bytes2;
+    private Long l2;
+    private Double d2;
+    private Character c2;
+    private Boolean bool2;
+
+//    private Date date;
 
     public int getId() {
         return id;
@@ -60,5 +80,133 @@ public class Person {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
+    public short getS() {
+        return s;
+    }
+
+    public void setS(short s) {
+        this.s = s;
+    }
+
+    public byte getB() {
+        return b;
+    }
+
+    public void setB(byte b) {
+        this.b = b;
+    }
+
+    public long getL() {
+        return l;
+    }
+
+    public void setL(long l) {
+        this.l = l;
+    }
+
+    public double getD() {
+        return d;
+    }
+
+    public void setD(double d) {
+        this.d = d;
+    }
+
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
+    }
+
+    public char getC() {
+        return c;
+    }
+
+    public void setC(char c) {
+        this.c = c;
+    }
+
+    public boolean isBool() {
+        return bool;
+    }
+
+    public void setBool(boolean bool) {
+        this.bool = bool;
+    }
+
+    public Integer getI2() {
+        return i2;
+    }
+
+    public void setI2(Integer i2) {
+        this.i2 = i2;
+    }
+
+    public Byte getB2() {
+        return b2;
+    }
+
+    public void setB2(Byte b2) {
+        this.b2 = b2;
+    }
+
+    public Short getS2() {
+        return s2;
+    }
+
+    public void setS2(Short s2) {
+        this.s2 = s2;
+    }
+
+    public Byte[] getBytes2() {
+        return bytes2;
+    }
+
+    public void setBytes2(Byte[] bytes2) {
+        this.bytes2 = bytes2;
+    }
+
+    public Long getL2() {
+        return l2;
+    }
+
+    public void setL2(Long l2) {
+        this.l2 = l2;
+    }
+
+    public Double getD2() {
+        return d2;
+    }
+
+    public void setD2(Double d2) {
+        this.d2 = d2;
+    }
+
+    public Character getC2() {
+        return c2;
+    }
+
+    public void setC2(Character c2) {
+        this.c2 = c2;
+    }
+
+    public Boolean getBool2() {
+        return bool2;
+    }
+
+    public void setBool2(Boolean bool2) {
+        this.bool2 = bool2;
     }
 }

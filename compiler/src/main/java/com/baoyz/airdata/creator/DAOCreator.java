@@ -25,9 +25,12 @@ package com.baoyz.airdata.creator;
 
 
 import com.baoyz.airdata.ColumnInfo;
+import com.baoyz.airdata.CursorWrapper;
 import com.baoyz.airdata.TableInfo;
+import com.baoyz.airdata.utils.DataType;
 import com.baoyz.airdata.utils.LogUtils;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -167,14 +170,9 @@ public class DAOCreator {
         for (int i = 0; i < columns.size(); i++) {
             ColumnInfo column = columns.get(i);
             // TODO 暂时全部使用getString
-            String type;
-            if ("int".equals(column.getTypeMirror().toString())) {
-                type = "Int";
-            } else {
-                type = "String";
-            }
-            fillDataMethod.addStatement("bean." + column.getSetter(), "cursor.get" + type + "(" + i + ")");
+            fillDataMethod.addStatement("bean." + column.getSetter(), CodeBlock.builder().add("$T.wrap(cursor)." + DataType.getCursorMethod(column.getTypeMirror()) + "(" + i + ")", ClassName.get(CursorWrapper.class)).build());
         }
+
         fillDataMethod.addStatement("return bean");
 
         return fillDataMethod.build();
