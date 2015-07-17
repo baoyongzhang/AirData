@@ -115,6 +115,8 @@ public class DAOCreator {
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
+            if (column.isPrimaryKey())
+                continue;
             insertBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
 
@@ -167,13 +169,14 @@ public class DAOCreator {
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get("android.database", "Cursor"), "cursor")
                 .returns(beanClassName)
-                .addStatement("$T bean = new $T()", beanClassName, beanClassName);
+                .addStatement("$T bean = new $T()", beanClassName, beanClassName)
+                .addStatement("$T cursorWrapper = $T.wrap(cursor)", ClassName.get(CursorWrapper.class), ClassName.get(CursorWrapper.class));
 
         List<ColumnInfo> columns = table.getColumns();
         for (int i = 0; i < columns.size(); i++) {
             ColumnInfo column = columns.get(i);
             // TODO 暂时全部使用getString
-            fillDataMethod.addStatement("bean." + column.getSetter(), CodeBlock.builder().add("$T.wrap(cursor)." + DataType.getCursorMethod(column.getTypeMirror()) + "(" + i + ")", ClassName.get(CursorWrapper.class)).build());
+            fillDataMethod.addStatement("bean." + column.getSetter(), "cursorWrapper." + DataType.getCursorMethod(column.getTypeMirror()) + "(" + i + ")");
         }
 
         fillDataMethod.addStatement("return bean");
