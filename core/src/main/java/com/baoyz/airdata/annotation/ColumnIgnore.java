@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * Created by baoyz on 15/6/28.
  */
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 public @interface ColumnIgnore {
 
 }

@@ -43,12 +43,13 @@ public class ColumnInfo {
     private String setter;
     private TypeMirror typeMirror;
     private boolean primaryKey;
+    private String definition;
 
     public ColumnInfo(VariableElement columnElement) {
-        setName(getColumnName(columnElement));
+
         typeMirror = columnElement.asType();
         LogUtils.debug("type = " + typeMirror);
-        // TODO 暂时全部使用TEXT类型
+
         setType(DataType.getTypeString(typeMirror));
 
         String simpleName = columnElement.getSimpleName().toString();
@@ -64,6 +65,35 @@ public class ColumnInfo {
             setSetter("set" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "($L)");
         }
 
+        // generate column definition
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(" ").append(type);
+        if (isPrimaryKey()) {
+            sb.append(" PRIMARY KEY AUTOINCREMENT");
+        }
+
+        String columnName = simpleName;
+        Column annotation = columnElement.getAnnotation(Column.class);
+        if (annotation != null) {
+            String name = annotation.name();
+            if (name != null && name.length() > 0) {
+                columnName = name;
+            }
+
+            if (annotation.notNull()) {
+                sb.append(" NOT NULL ON CONFLICT ");
+                sb.append(annotation.onNullConflict().toString());
+            }
+
+            if (annotation.unique()) {
+                sb.append(" UNIQUE ON CONFLICT ");
+                sb.append(annotation.onUniqueConflict().toString());
+            }
+        }
+
+        setName(columnName);
+
+        definition = sb.toString();
     }
 
     private String getColumnName(VariableElement element) {
@@ -94,12 +124,7 @@ public class ColumnInfo {
     }
 
     public String getDefinition() {
-        StringBuilder definition = new StringBuilder();
-        definition.append(name).append(" ").append(type);
-        if (isPrimaryKey()) {
-            definition.append(" PRIMARY KEY AUTOINCREMENT");
-        }
-        return definition.toString();
+        return definition;
     }
 
     @Override

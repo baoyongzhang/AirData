@@ -25,6 +25,7 @@ package com.baoyz.airdata.creator;
 
 import com.baoyz.airdata.ColumnInfo;
 import com.baoyz.airdata.TableInfo;
+import com.baoyz.airdata.annotation.ColumnIgnore;
 import com.baoyz.airdata.annotation.Database;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
@@ -150,7 +151,7 @@ public class SQLiteOpenHelperCreator {
                     .getEnclosedElements();
             for (Element element : enclosedElements) {
                 if (element instanceof VariableElement
-                        && Utils.isValid((VariableElement) element)) {
+                        && Utils.isValid((VariableElement) element) && element.getAnnotation(ColumnIgnore.class) == null) {
                     VariableElement columnElement = (VariableElement) element;
                     ColumnInfo column = new ColumnInfo(columnElement);
                     table.addColumn(column);

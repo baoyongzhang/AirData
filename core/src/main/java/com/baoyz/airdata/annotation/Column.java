@@ -33,8 +33,17 @@ import java.lang.annotation.Target;
  * Created by baoyz on 15/6/28.
  */
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 public @interface Column {
 
+    enum ConflictAction {
+        ROLLBACK, ABORT, FAIL, IGNORE, REPLACE
+    }
+
     String name() default "";
+    boolean notNull() default false;
+    boolean unique() default false;
+    boolean index() default false;
+    ConflictAction onNullConflict() default ConflictAction.FAIL;
+    ConflictAction onUniqueConflict() default ConflictAction.FAIL;
 }

@@ -23,6 +23,8 @@
  */
 package com.baoyz.airdata.model;
 
+import com.baoyz.airdata.annotation.Column;
+import com.baoyz.airdata.annotation.ColumnIgnore;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 
@@ -37,23 +39,35 @@ public class Person {
 
     @PrimaryKey
     private int id;
+    @Column(name = "haha_name")
     private String name;
     private int age;
     private byte[] bytes;
     private short s;
     private byte b;
+    @ColumnIgnore
     private long l;
+    @ColumnIgnore
     private double d;
     private float f;
+    @ColumnIgnore
     private char c;
+    @ColumnIgnore
     private boolean bool;
+    @ColumnIgnore
     private Integer i2;
     private Byte b2;
+    @ColumnIgnore
     private Short s2;
+    @ColumnIgnore
     private Byte[] bytes2;
+    @ColumnIgnore
     private Long l2;
+    @ColumnIgnore
     private Double d2;
+    @ColumnIgnore
     private Character c2;
+    @ColumnIgnore
     private Boolean bool2;
 
 //    private Date date;
