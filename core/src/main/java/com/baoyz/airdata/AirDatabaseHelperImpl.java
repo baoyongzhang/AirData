@@ -23,7 +23,6 @@
  */
 package com.baoyz.airdata;
 
-import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -31,46 +30,43 @@ import java.util.List;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/19.
  */
-public abstract class AbstractDatabase {
+public class AirDatabaseHelperImpl implements AirDatabaseHelper {
 
-    AirDatabaseHelper mDatabaseHelper;
     private Context mContext;
 
-    public AbstractDatabase(Context context) {
-        if (!(context instanceof Application)) {
-            // TODO throw exception
-        }
-        mContext = context;
-        mDatabaseHelper = new AirDatabaseHelperImpl(mContext);
+    public AirDatabaseHelperImpl(Context mContext) {
+        this.mContext = mContext;
     }
 
-    public SQLiteDatabase getDatabase() {
-        return mDatabaseHelper.getDatabase();
+    @Override
+    public long save(Object obj) {
+        return 0;
     }
 
-    public String getName() {
+    @Override
+    public long delete(Object obj) {
+        return 0;
+    }
+
+    @Override
+    public long update(Object obj) {
+        return 0;
+    }
+
+    @Override
+    public <T> List<T> query(Class<T> clazz) {
         return null;
     }
 
-    public int getVersion() {
-        return 1;
+    @Override
+    public void destory() {
+
     }
 
-    public <T> List<T> query(Class<T> clazz) {
-        return mDatabaseHelper.query(clazz);
-    }
-
-    public long save(Object obj) {
-        return mDatabaseHelper.save(obj);
-    }
-
-    public long delete(Object obj) {
-        return mDatabaseHelper.delete(obj);
-    }
-
-    public long update(Object obj) {
-        return mDatabaseHelper.update(obj);
+    @Override
+    public SQLiteDatabase getDatabase() {
+        return null;
     }
 }

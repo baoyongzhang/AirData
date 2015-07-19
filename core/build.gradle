@@ -13,6 +13,29 @@ idea {
     }
 }
 
+//packagingOptions {
+//    exclude 'com/baoyz/airdata/AirDatabaseHelperImpl.java'
+//}
+
+//FileTree tree = fileTree(dir: 'src/main')
+//
+//tree.exclude '**/AirDatabaseHelperImpl*'
+
+//sourceSets {
+//    main {
+//        java {
+//            srcDir 'src'
+//            exclude '**/AirDatabaseHelperImpl*'
+//        }
+//    }
+//}
+
+jar {
+
+    exclude '**/AirDatabaseHelperImpl*'
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.google.android:android:+'
