@@ -24,8 +24,8 @@
 package com.baoyz.airdata;
 
 import com.baoyz.airdata.annotation.Column;
+import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.utils.DataType;
-import com.baoyz.airdata.utils.LogUtils;
 import com.baoyz.airdata.utils.Utils;
 
 import javax.lang.model.element.VariableElement;
@@ -48,7 +48,6 @@ public class ColumnInfo {
     public ColumnInfo(VariableElement columnElement) {
 
         typeMirror = columnElement.asType();
-        LogUtils.debug("type = " + typeMirror);
 
         setType(DataType.getTypeString(typeMirror));
 
@@ -65,6 +64,10 @@ public class ColumnInfo {
             setSetter("set" + new String(new char[]{simpleName.charAt(0)}).toString().toUpperCase() + simpleName.substring(1) + "($L)");
         }
 
+        setPrimaryKey(columnElement.getAnnotation(PrimaryKey.class) != null);
+
+        setName(getColumnName(columnElement));
+
         // generate column definition
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(" ").append(type);
@@ -72,14 +75,8 @@ public class ColumnInfo {
             sb.append(" PRIMARY KEY AUTOINCREMENT");
         }
 
-        String columnName = simpleName;
         Column annotation = columnElement.getAnnotation(Column.class);
         if (annotation != null) {
-            String name = annotation.name();
-            if (name != null && name.length() > 0) {
-                columnName = name;
-            }
-
             if (annotation.notNull()) {
                 sb.append(" NOT NULL ON CONFLICT ");
                 sb.append(annotation.onNullConflict().toString());
@@ -90,9 +87,6 @@ public class ColumnInfo {
                 sb.append(annotation.onUniqueConflict().toString());
             }
         }
-
-        setName(columnName);
-
         definition = sb.toString();
     }
 

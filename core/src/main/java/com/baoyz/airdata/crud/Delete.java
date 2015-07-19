@@ -21,63 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata.model;
+package com.baoyz.airdata.crud;
 
-import com.baoyz.airdata.annotation.PrimaryKey;
-import com.baoyz.airdata.annotation.Table;
+import com.baoyz.airdata.AbstractDatabase;
+import com.baoyz.airdata.AirDatabaseHelper;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/19.
  */
-@Table
-public class Student {
+public class Delete<T> {
 
-    @PrimaryKey
-    private int id;
-    private String name;
-    private int score;
-    private char mark;
+    private Class<T> table;
+    private String where;
+    private String[] whereArgs;
 
-    public int getId() {
-        return id;
+    private AbstractDatabase database;
+    private AirDatabaseHelper helper;
+
+    public Delete(AbstractDatabase database) {
+        this.database = database;
+        this.helper = database.getDatabaseHelper();
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Delete from(Class<T> table) {
+        this.table = table;
+        return this;
     }
 
-    public String getName() {
-        return name;
+    public Delete where(String where, String... whereArgs) {
+        this.where = where;
+        this.whereArgs = whereArgs;
+        return this;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public long execute() {
+        return helper.delete(table, where, whereArgs);
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public char getMark() {
-        return mark;
-    }
-
-    public void setMark(char mark) {
-        this.mark = mark;
-    }
-
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", score=" + score +
-                ", mark=" + mark +
-                '}';
-    }
 }

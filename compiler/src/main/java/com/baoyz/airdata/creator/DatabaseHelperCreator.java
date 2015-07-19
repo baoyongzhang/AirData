@@ -25,8 +25,10 @@ package com.baoyz.airdata.creator;
 
 
 import com.baoyz.airdata.AirDatabaseHelper;
+import com.baoyz.airdata.ContentValuesWrapper;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.utils.LogUtils;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -86,11 +88,20 @@ public class DatabaseHelperCreator {
         // generate query method
         typeSpecBuilder.addMethod(generateQueryMethod(typeSpecBuilder));
 
+        // generate queryAll method
+        typeSpecBuilder.addMethod(generateQueryAllMethod(typeSpecBuilder));
+
         // generate update method
-        typeSpecBuilder.addMethod(generateUpdateMethod(typeSpecBuilder));
+        typeSpecBuilder.addMethod(generateUpdateMethod());
+
+        // generate updateById method
+        typeSpecBuilder.addMethod(generateUpdateByIdMethod(typeSpecBuilder));
 
         // generate delete method
-        typeSpecBuilder.addMethod(generateDeleteMethod(typeSpecBuilder));
+        typeSpecBuilder.addMethod(generateDeleteMethod());
+
+        // generate deleteById method
+        typeSpecBuilder.addMethod(generateDeleteByIdMethod(typeSpecBuilder));
 
         // destory method
         MethodSpec destoryMethod = MethodSpec.methodBuilder("destory")
@@ -151,11 +162,31 @@ public class DatabaseHelperCreator {
         return saveMethodBuidler.build();
     }
 
-    private MethodSpec generateUpdateMethod(TypeSpec.Builder typeSpecBuilder) {
+    private MethodSpec generateUpdateMethod() {
         MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("update")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get(Class.class), "clazz")
+                .addParameter(ClassName.get(ContentValuesWrapper.class), "valuesWrapper")
+                .addParameter(ClassName.get(String.class), "where")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "whereArgs");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+            saveMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.update(valuesWrapper, where, whereArgs)", table.getClassName(), daoField);
+        }
+
+        saveMethodBuidler.addStatement("return 0");
+        return saveMethodBuidler.build();
+    }
+
+    private MethodSpec generateUpdateByIdMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("update")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
                 .addParameter(ClassName.get(Object.class), "bean");
 
         for (TableInfo table : tables) {
@@ -164,7 +195,7 @@ public class DatabaseHelperCreator {
 
             MethodSpec methodSpec = MethodSpec.methodBuilder("update")
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.LONG)
+                    .returns(TypeName.INT)
                     .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
                     .addStatement("return $L.update(bean)", daoField)
                     .build();
@@ -177,11 +208,31 @@ public class DatabaseHelperCreator {
         return saveMethodBuidler.build();
     }
 
-    private MethodSpec generateDeleteMethod(TypeSpec.Builder typeSpecBuilder) {
+    private MethodSpec generateDeleteMethod() {
         MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("delete")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get(Class.class), "clazz")
+                .addParameter(ClassName.get(String.class), "where")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "whereArgs");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+
+            saveMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.delete(where, whereArgs)", table.getClassName(), daoField);
+        }
+
+        saveMethodBuidler.addStatement("return 0");
+        return saveMethodBuidler.build();
+    }
+
+    private MethodSpec generateDeleteByIdMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder saveMethodBuidler = MethodSpec.methodBuilder("delete")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
                 .addParameter(ClassName.get(Object.class), "bean");
 
         for (TableInfo table : tables) {
@@ -190,7 +241,7 @@ public class DatabaseHelperCreator {
 
             MethodSpec methodSpec = MethodSpec.methodBuilder("delete")
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.LONG)
+                    .returns(TypeName.INT)
                     .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
                     .addStatement("return $L.delete(bean)", daoField)
                     .build();
@@ -203,8 +254,8 @@ public class DatabaseHelperCreator {
         return saveMethodBuidler.build();
     }
 
-    private MethodSpec generateQueryMethod(TypeSpec.Builder typeSpecBuilder) {
-        MethodSpec.Builder queryMethodBuidler = MethodSpec.methodBuilder("query")
+    private MethodSpec generateQueryAllMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder queryMethodBuidler = MethodSpec.methodBuilder("queryAll")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.get(List.class))
@@ -213,15 +264,56 @@ public class DatabaseHelperCreator {
         for (TableInfo table : tables) {
 
             String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+            MethodSpec methodSpec = MethodSpec.methodBuilder("queryAll")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.get(List.class))
+                    .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
+                    .addStatement("return $L.queryAll()", daoField)
+                    .build();
+            typeSpecBuilder.addMethod(methodSpec);
+
+            queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.queryAll()", table.getClassName(), daoField);
+        }
+
+        queryMethodBuidler.addStatement("return null");
+        return queryMethodBuidler.build();
+    }
+
+    private MethodSpec generateQueryMethod(TypeSpec.Builder typeSpecBuilder) {
+        MethodSpec.Builder queryMethodBuidler = MethodSpec.methodBuilder("query")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get(List.class))
+                .addParameter(ClassName.get(Class.class), "clazz")
+                .addParameter(TypeName.BOOLEAN, "distinct")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "columns")
+                .addParameter(ClassName.get(String.class), "selection")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "selectionArgs")
+                .addParameter(ClassName.get(String.class), "groupBy")
+                .addParameter(ClassName.get(String.class), "having")
+                .addParameter(ClassName.get(String.class), "orderBy")
+                .addParameter(ClassName.get(String.class), "limit");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
             MethodSpec methodSpec = MethodSpec.methodBuilder("query")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.get(List.class))
                     .addParameter(ClassName.get(table.getPackageName(), table.getClassName()), "bean")
-                    .addStatement("return $L.query()", daoField)
+                    .addParameter(TypeName.BOOLEAN, "distinct")
+                    .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "columns")
+                    .addParameter(ClassName.get(String.class), "selection")
+                    .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "selectionArgs")
+                    .addParameter(ClassName.get(String.class), "groupBy")
+                    .addParameter(ClassName.get(String.class), "having")
+                    .addParameter(ClassName.get(String.class), "orderBy")
+                    .addParameter(ClassName.get(String.class), "limit")
+                    .addStatement("return $L.query(distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", daoField)
                     .build();
             typeSpecBuilder.addMethod(methodSpec);
 
-            queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.query()", table.getClassName(), daoField);
+            queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.query(distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", table.getClassName(), daoField);
         }
 
         queryMethodBuidler.addStatement("return null");

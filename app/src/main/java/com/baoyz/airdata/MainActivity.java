@@ -1,19 +1,13 @@
 package com.baoyz.airdata;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.baoyz.airdata.crud.Select;
 import com.baoyz.airdata.model.Person;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -81,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void query(){
-        list = mDatabase.query(Person.class);
+//        list = mDatabase.query(Person.class);
+        list = new Select<Person>(mDatabase).from(Person.class).list();
         StringBuilder sb = new StringBuilder();
         for (Person person : list) {
             sb.append(person.toString()).append("\n");

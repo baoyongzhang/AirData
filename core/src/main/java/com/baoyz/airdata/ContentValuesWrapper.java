@@ -86,7 +86,7 @@ public class ContentValuesWrapper {
     }
 
     public void put(String key, char value) {
-        values.put(key, (int)value);
+        values.put(key, (int) value);
     }
 
     public void put(String key, Character value) {
@@ -95,5 +95,9 @@ public class ContentValuesWrapper {
             return;
         }
         put(key, (char) value);
+    }
+
+    public ContentValues getValues() {
+        return values;
     }
 }

@@ -24,6 +24,7 @@
 package com.baoyz.airdata;
 
 import com.baoyz.airdata.creator.SQLiteOpenHelperCreator;
+import com.baoyz.airdata.utils.LogUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -62,6 +63,7 @@ public class AirDataProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        LogUtils.debug(".........process");
         SQLiteOpenHelperCreator sqLiteOpenHelperCreator = new SQLiteOpenHelperCreator(filer);
         sqLiteOpenHelperCreator.create(roundEnv);
         return true;

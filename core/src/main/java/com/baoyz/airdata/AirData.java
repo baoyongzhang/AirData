@@ -28,4 +28,5 @@ package com.baoyz.airdata;
  * Created by baoyz on 15/6/28.
  */
 public class AirData {
+
 }

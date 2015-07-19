@@ -23,7 +23,6 @@
  */
 package com.baoyz.airdata.model;
 
-import com.baoyz.airdata.annotation.Column;
 import com.baoyz.airdata.annotation.ColumnIgnore;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
@@ -39,7 +38,6 @@ public class Person {
 
     @PrimaryKey
     private int id;
-    @Column(name = "haha_name")
     private String name;
     private int age;
     private byte[] bytes;

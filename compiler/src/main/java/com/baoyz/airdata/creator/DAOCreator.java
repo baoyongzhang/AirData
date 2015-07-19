@@ -30,6 +30,7 @@ import com.baoyz.airdata.CursorWrapper;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.utils.DataType;
 import com.baoyz.airdata.utils.LogUtils;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -68,10 +69,6 @@ public class DAOCreator {
                 .addStatement("this.$L = $L", "database", "db")
                 .build();
 
-        MethodSpec insertMethod = generatorInsertMethod(beanClassName);
-        MethodSpec updateMethod = generatorUpdateMethod(beanClassName);
-        MethodSpec deleteMethod = generatorDeleteMethod(beanClassName);
-
         String qualifiedName = table.getQualifiedName();
         String packageName = qualifiedName
                 .substring(0, qualifiedName.lastIndexOf("."));
@@ -84,11 +81,14 @@ public class DAOCreator {
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
-                .addMethod(insertMethod)
-                .addMethod(updateMethod)
-                .addMethod(deleteMethod)
+                .addMethod(generatorInsertMethod(beanClassName))
+                .addMethod(generatorUpdateAllMethod(beanClassName))
+                .addMethod(generatorUpdateMethod())
+                .addMethod(generatorDeleteMethod())
+                .addMethod(generatorDeleteByIdMethod(beanClassName))
                 .addMethod(generatorQueryMethod())
                 .addMethod(generatorFillDataMethod())
+                .addMethod(generatorQueryAllMethod())
                 .addField(tableNameField)
                 .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .build();
@@ -124,10 +124,10 @@ public class DAOCreator {
         return insertBuilder.build();
     }
 
-    private MethodSpec generatorUpdateMethod(ClassName person) {
-        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("update")
+    private MethodSpec generatorUpdateAllMethod(ClassName person) {
+        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
+                .returns(TypeName.INT)
                 .addParameter(person, "bean")
                 .addStatement("$T values = new $T()", ClassName.get("android.content", "ContentValues"), ClassName.get("android.content", "ContentValues"))
                 .addStatement("$T valuesWrapper = $T.wrap(values)", ClassName.get(ContentValuesWrapper.class), ClassName.get(ContentValuesWrapper.class));
@@ -136,27 +136,74 @@ public class DAOCreator {
         for (ColumnInfo column : columns) {
             if (column.isPrimaryKey())
                 continue;
-            insertBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
+            updateBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
 
-        insertBuilder.addStatement("return database.update(TABLE_NAME, values, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
-        return insertBuilder.build();
+        updateBuilder.addStatement("return this.update(valuesWrapper, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
+        return updateBuilder.build();
     }
 
-    private MethodSpec generatorDeleteMethod(ClassName person) {
+    private MethodSpec generatorUpdateMethod() {
+        MethodSpec.Builder updateBuilder = MethodSpec.methodBuilder("update")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get(ContentValuesWrapper.class), "valuesWrapper")
+                .addParameter(ClassName.get(String.class), "where")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "whereArgs");
+
+        updateBuilder.addStatement("return database.update(TABLE_NAME, valuesWrapper.getValues(), where, whereArgs)");
+        return updateBuilder.build();
+    }
+
+    private MethodSpec generatorDeleteByIdMethod(ClassName person) {
         MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("delete")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.LONG)
+                .returns(TypeName.INT)
                 .addParameter(person, "bean")
-                .addStatement("return database.delete(TABLE_NAME, $S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
+                .addStatement("return this.delete($S, new String[]{String.valueOf(bean.$L)})", table.getPrimaryKeyColumn().getName() + "=?", table.getPrimaryKeyColumn().getGetter());
         return insertBuilder.build();
     }
 
+    private MethodSpec generatorDeleteMethod() {
+        MethodSpec.Builder insertBuilder = MethodSpec.methodBuilder("delete")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.INT)
+                .addParameter(ClassName.get(String.class), "where")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "whereArgs")
+                .addStatement("return database.delete(TABLE_NAME, where, whereArgs)");
+        return insertBuilder.build();
+    }
+
+    private MethodSpec generatorQueryAllMethod() {
+        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("queryAll")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get(List.class))
+                .addStatement("$T cursor = database.query(TABLE_NAME, null, null, null, null, null, null)", ClassName.get("android.database", "Cursor"))
+                .addCode("");
+        queryBuilder.addStatement("$T list = new $T()", ArrayList.class, ArrayList.class);
+        queryBuilder.addCode("while (cursor.moveToNext()) {list.add(fillData(cursor));}");
+        queryBuilder.addStatement("return list");
+        return queryBuilder.build();
+    }
+
+    /*
+     boolean distinct, String table, String[] columns,
+     String selection, String[] selectionArgs, String groupBy,
+     String having, String orderBy, String limit
+     */
     private MethodSpec generatorQueryMethod() {
         MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("query")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.get(List.class))
-                .addStatement("$T cursor = database.query(TABLE_NAME, null, null, null, null, null, null)", ClassName.get("android.database", "Cursor"))
+                .addParameter(TypeName.BOOLEAN, "distinct")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "columns")
+                .addParameter(ClassName.get(String.class), "selection")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "selectionArgs")
+                .addParameter(ClassName.get(String.class), "groupBy")
+                .addParameter(ClassName.get(String.class), "having")
+                .addParameter(ClassName.get(String.class), "orderBy")
+                .addParameter(ClassName.get(String.class), "limit")
+                .addStatement("$T cursor = database.query(distinct, TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", ClassName.get("android.database", "Cursor"))
                 .addCode("");
         queryBuilder.addStatement("$T list = new $T()", ArrayList.class, ArrayList.class);
         queryBuilder.addCode("while (cursor.moveToNext()) {list.add(fillData(cursor));}");
@@ -175,7 +222,6 @@ public class DAOCreator {
         List<ColumnInfo> columns = table.getColumns();
         for (int i = 0; i < columns.size(); i++) {
             ColumnInfo column = columns.get(i);
-            // TODO 暂时全部使用getString
             fillDataMethod.addStatement("bean." + column.getSetter(), "cursorWrapper." + DataType.getCursorMethod(column.getTypeMirror()) + "(" + i + ")");
         }
 

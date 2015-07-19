@@ -59,7 +59,7 @@ public abstract class AbstractDatabase {
     }
 
     public <T> List<T> query(Class<T> clazz) {
-        return mDatabaseHelper.query(clazz);
+        return mDatabaseHelper.queryAll(clazz);
     }
 
     public long save(Object obj) {
@@ -72,5 +72,9 @@ public abstract class AbstractDatabase {
 
     public long update(Object obj) {
         return mDatabaseHelper.update(obj);
+    }
+
+    public AirDatabaseHelper getDatabaseHelper() {
+        return mDatabaseHelper;
     }
 }

@@ -34,9 +34,22 @@ import java.util.List;
 public interface AirDatabaseHelper {
 
     long save(Object obj);
-    long delete(Object obj);
-    long update(Object obj);
-    <T> List<T> query(Class<T> clazz);
+
+    int delete(Object obj);
+
+    int update(Object obj);
+
+    <T> int update(Class<T> clazz, ContentValuesWrapper valuesWrapper, String where, String[] whereArgs);
+
+    <T> int delete(Class<T> clazz, String where, String[] whereArgs);
+
+    <T> List<T> queryAll(Class<T> clazz);
+
+    <T> List<T> query(Class<T> clazz, boolean distinct, String[] columns,
+                      String selection, String[] selectionArgs, String groupBy,
+                      String having, String orderBy, String limit);
+
     void destory();
+
     SQLiteDatabase getDatabase();
 }

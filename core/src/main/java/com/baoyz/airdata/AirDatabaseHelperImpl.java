@@ -46,17 +46,32 @@ public class AirDatabaseHelperImpl implements AirDatabaseHelper {
     }
 
     @Override
-    public long delete(Object obj) {
+    public int delete(Object obj) {
         return 0;
     }
 
     @Override
-    public long update(Object obj) {
+    public int update(Object obj) {
         return 0;
     }
 
     @Override
-    public <T> List<T> query(Class<T> clazz) {
+    public <T> int update(Class<T> clazz, ContentValuesWrapper valuesWrapper, String where, String[] whereArgs) {
+        return 0;
+    }
+
+    @Override
+    public <T> int delete(Class<T> clazz, String where, String[] whereArgs) {
+        return 0;
+    }
+
+    @Override
+    public <T> List<T> queryAll(Class<T> clazz) {
+        return null;
+    }
+
+    @Override
+    public <T> List<T> query(Class<T> clazz, boolean distinct, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         return null;
     }
 
