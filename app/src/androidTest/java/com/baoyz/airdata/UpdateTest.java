@@ -21,42 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata.crud;
+package com.baoyz.airdata;
 
-import com.baoyz.airdata.AbstractDatabase;
-import com.baoyz.airdata.AirDatabaseHelper;
+import android.app.Application;
+import android.test.ApplicationTestCase;
+
+import com.baoyz.airdata.crud.Select;
+import com.baoyz.airdata.crud.Update;
+import com.baoyz.airdata.model.Student;
 
 /**
  * AirData
- * Created by baoyz on 15/7/19.
+ * Created by baoyz on 15/7/21.
  */
-public class Delete<T> {
+public class UpdateTest extends ApplicationTestCase<Application> {
 
-    private Class<T> table;
-    private String where;
-    private String[] whereArgs;
-
-    private AbstractDatabase database;
-    private AirDatabaseHelper helper;
-
-    public Delete(AbstractDatabase database) {
-        this.database = database;
-        this.helper = database.getDatabaseHelper();
+    public UpdateTest() {
+        super(Application.class);
     }
 
-    public Delete<T> from(Class<T> table) {
-        this.table = table;
-        return this;
+    public void testUpdateAll() {
+        MyDatabase database = new MyDatabase(getContext());
+        long update = new Update<Student>(database).from(Student.class).set("mark", 'T').set("score", 60).execute();
+        assertTrue(update > 0);
     }
 
-    public Delete<T> where(String where, String... whereArgs) {
-        this.where = where;
-        this.whereArgs = whereArgs;
-        return this;
-    }
-
-    public long execute() {
-        return helper.delete(table, where, whereArgs);
+    public void testUpdateById() {
+        MyDatabase database = new MyDatabase(getContext());
+        int id = new Select<Student>(database).from(Student.class).single().getId();
+        long update = new Update<Student>(database)
+                .from(Student.class)
+                .set("mark", 'D')
+                .set("score", 70)
+                .where("id=?", id)
+                .execute();
+        assertTrue(update == 1);
     }
 
 }

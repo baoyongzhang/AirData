@@ -49,73 +49,79 @@ public class Update<T> {
         values = ContentValuesWrapper.wrap(new ContentValues());
     }
 
-    public Update from(Class<T> table) {
+    public Update<T> from(Class<T> table) {
         this.table = table;
         return this;
     }
 
-    public Update where(String where, String... whereArgs) {
+    public Update<T> where(String where, Object... whereArgs) {
         this.where = where;
-        this.whereArgs = whereArgs;
+        if (whereArgs != null) {
+            this.whereArgs = new String[whereArgs.length];
+            for (int i = 0; i < whereArgs.length; i++) {
+                Object obj = whereArgs[i];
+                this.whereArgs[i] = obj == null ? null : obj.toString();
+            }
+        }
         return this;
     }
 
-    public Update set(String name, Boolean value) {
+    public Update<T> set(String name, Boolean value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Byte value) {
+    public Update<T> set(String name, Byte value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Short value) {
+    public Update<T> set(String name, Short value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Integer value) {
+    public Update<T> set(String name, Integer value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Long value) {
+    public Update<T> set(String name, Long value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Double value) {
+    public Update<T> set(String name, Double value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Float value) {
+    public Update<T> set(String name, Float value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, String value) {
+    public Update<T> set(String name, String value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, byte[] value) {
+    public Update<T> set(String name, byte[] value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Byte[] value) {
+    public Update<T> set(String name, Byte[] value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, char value) {
+    public Update<T> set(String name, char value) {
         values.put(name, value);
         return this;
     }
 
-    public Update set(String name, Character value) {
+    public Update<T> set(String name, Character value) {
         values.put(name, value);
         return this;
     }

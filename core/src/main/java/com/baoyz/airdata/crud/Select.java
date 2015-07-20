@@ -61,28 +61,28 @@ public class Select<T> {
         this.helper = database.getDatabaseHelper();
     }
 
-    public Select columns(String... columns) {
+    public Select<T> columns(String... columns) {
         this.columns = columns;
         return this;
     }
 
-    public Select from(Class<T> table) {
+    public Select<T> from(Class<T> table) {
         this.table = table;
         return this;
     }
 
-    public Select distinct(boolean distinct) {
+    public Select<T> distinct(boolean distinct) {
         this.distinct = distinct;
         return this;
     }
 
-    public Select where(String selection, String... selectionArgs) {
+    public Select<T> where(String selection, String... selectionArgs) {
         this.selection = selection;
         this.selectionArgs = selectionArgs;
         return this;
     }
 
-    public Select groupBy(String groupBy) {
+    public Select<T> groupBy(String groupBy) {
         this.groupBy = groupBy;
         return this;
     }
@@ -92,17 +92,17 @@ public class Select<T> {
         return this;
     }
 
-    public Select orderBy(String orderBy) {
+    public Select<T> orderBy(String orderBy) {
         this.orderBy = orderBy;
         return this;
     }
 
-    public Select limit(int limit) {
+    public Select<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
 
-    public Select offset(int offset) {
+    public Select<T> offset(int offset) {
         this.offest = offset;
         return this;
     }
@@ -125,7 +125,8 @@ public class Select<T> {
     public T single() {
         List<T> list = list();
         if (list != null && list.size() > 0) {
-            return list.get(0);
+            T result = list.get(0);
+            return result;
         }
         return null;
     }
@@ -136,7 +137,8 @@ public class Select<T> {
             limitString += ", " + offest;
         }
 
-        return helper.query(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limitString);
+        List<T> result = helper.query(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limitString);
+        return result;
     }
 
 }
