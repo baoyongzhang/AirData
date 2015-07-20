@@ -105,6 +105,10 @@ public class Select<T> {
         return this;
     }
 
+    public int count() {
+        columns = new String[]{ "COUNT(*)" };
+    }
+
     public T single() {
         List<T> list = list();
         if (list != null && list.size() > 0) {

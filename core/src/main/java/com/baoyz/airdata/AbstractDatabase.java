@@ -74,6 +74,18 @@ public abstract class AbstractDatabase {
         return mDatabaseHelper.update(obj);
     }
 
+    public void beginTransaction(){
+        mDatabaseHelper.getDatabase().beginTransaction();
+    }
+
+    public void endTransaction(){
+        mDatabaseHelper.getDatabase().endTransaction();
+    }
+
+    public void setTransactionSuccessful(){
+        mDatabaseHelper.getDatabase().setTransactionSuccessful();
+    }
+
     public AirDatabaseHelper getDatabaseHelper() {
         return mDatabaseHelper;
     }

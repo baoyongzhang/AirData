@@ -121,6 +121,9 @@ public class Update<T> {
     }
 
     public long execute() {
+        if (table == null) {
+            throw new NullPointerException("table is null");
+        }
         return helper.update(table, values, where, whereArgs);
     }
 
