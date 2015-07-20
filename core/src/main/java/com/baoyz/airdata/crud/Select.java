@@ -23,6 +23,8 @@
  */
 package com.baoyz.airdata.crud;
 
+import android.database.Cursor;
+
 import com.baoyz.airdata.AbstractDatabase;
 import com.baoyz.airdata.AirDatabaseHelper;
 
@@ -106,7 +108,18 @@ public class Select<T> {
     }
 
     public int count() {
-        columns = new String[]{ "COUNT(*)" };
+        String limitString = limit == null ? null : limit.toString();
+        if (offest != null) {
+            limitString += ", " + offest;
+        }
+
+        columns = new String[]{"COUNT(*)"};
+
+        Cursor cursor = helper.rawQuery(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limitString);
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(0);
+        }
+        return 0;
     }
 
     public T single() {

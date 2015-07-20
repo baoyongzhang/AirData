@@ -59,6 +59,11 @@ public class AirSQLHelper {
 
     public Cursor query(Person person) {
         Cursor cursor = database.query(TABLE_NAME, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+
+            } while (cursor.moveToNext());
+        }
         return cursor;
     }
 

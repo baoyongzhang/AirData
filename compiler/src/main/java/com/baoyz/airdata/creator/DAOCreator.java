@@ -89,6 +89,7 @@ public class DAOCreator {
                 .addMethod(generatorQueryMethod())
                 .addMethod(generatorFillDataMethod())
                 .addMethod(generatorQueryAllMethod())
+                .addMethod(generatorRawQueryMethod())
                 .addField(tableNameField)
                 .addField(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "database", Modifier.PRIVATE)
                 .build();
@@ -178,11 +179,7 @@ public class DAOCreator {
         MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("queryAll")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.get(List.class))
-                .addStatement("$T cursor = database.query(TABLE_NAME, null, null, null, null, null, null)", ClassName.get("android.database", "Cursor"))
-                .addCode("");
-        queryBuilder.addStatement("$T list = new $T()", ArrayList.class, ArrayList.class);
-        queryBuilder.addCode("while (cursor.moveToNext()) {list.add(fillData(cursor));}");
-        queryBuilder.addStatement("return list");
+                .addStatement("return this.query(false, null, null, null, null, null, null, null)");
         return queryBuilder.build();
     }
 
@@ -203,11 +200,30 @@ public class DAOCreator {
                 .addParameter(ClassName.get(String.class), "having")
                 .addParameter(ClassName.get(String.class), "orderBy")
                 .addParameter(ClassName.get(String.class), "limit")
-                .addStatement("$T cursor = database.query(distinct, TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", ClassName.get("android.database", "Cursor"))
-                .addCode("");
+                .addStatement("$T cursor = this.rawQuery(distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", ClassName.get("android.database", "Cursor"));
         queryBuilder.addStatement("$T list = new $T()", ArrayList.class, ArrayList.class);
-        queryBuilder.addCode("while (cursor.moveToNext()) {list.add(fillData(cursor));}");
+        queryBuilder.addCode("if (cursor.moveToFirst()) {");
+        queryBuilder.addCode("  do {");
+        queryBuilder.addCode("     list.add(fillData(cursor));");
+        queryBuilder.addCode("  } while (cursor.moveToNext());");
+        queryBuilder.addCode("}");
         queryBuilder.addStatement("return list");
+        return queryBuilder.build();
+    }
+
+    private MethodSpec generatorRawQueryMethod() {
+        MethodSpec.Builder queryBuilder = MethodSpec.methodBuilder("rawQuery")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get("android.database", "Cursor"))
+                .addParameter(TypeName.BOOLEAN, "distinct")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "columns")
+                .addParameter(ClassName.get(String.class), "selection")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "selectionArgs")
+                .addParameter(ClassName.get(String.class), "groupBy")
+                .addParameter(ClassName.get(String.class), "having")
+                .addParameter(ClassName.get(String.class), "orderBy")
+                .addParameter(ClassName.get(String.class), "limit")
+                .addStatement("return database.query(distinct, TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit)");
         return queryBuilder.build();
     }
 

@@ -23,6 +23,7 @@
  */
 package com.baoyz.airdata;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
@@ -46,6 +47,10 @@ public interface AirDatabaseHelper {
     <T> List<T> queryAll(Class<T> clazz);
 
     <T> List<T> query(Class<T> clazz, boolean distinct, String[] columns,
+                      String selection, String[] selectionArgs, String groupBy,
+                      String having, String orderBy, String limit);
+
+    <T> Cursor rawQuery(Class<T> clazz, boolean distinct, String[] columns,
                       String selection, String[] selectionArgs, String groupBy,
                       String having, String orderBy, String limit);
 

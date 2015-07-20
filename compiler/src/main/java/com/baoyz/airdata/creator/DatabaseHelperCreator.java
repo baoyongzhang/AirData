@@ -91,6 +91,9 @@ public class DatabaseHelperCreator {
         // generate queryAll method
         typeSpecBuilder.addMethod(generateQueryAllMethod(typeSpecBuilder));
 
+        // generate rawQuery method
+        typeSpecBuilder.addMethod(generateRawQueryMethod());
+
         // generate update method
         typeSpecBuilder.addMethod(generateUpdateMethod());
 
@@ -314,6 +317,32 @@ public class DatabaseHelperCreator {
             typeSpecBuilder.addMethod(methodSpec);
 
             queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.query(distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", table.getClassName(), daoField);
+        }
+
+        queryMethodBuidler.addStatement("return null");
+        return queryMethodBuidler.build();
+    }
+
+    private MethodSpec generateRawQueryMethod() {
+        MethodSpec.Builder queryMethodBuidler = MethodSpec.methodBuilder("rawQuery")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get("android.database", "Cursor"))
+                .addParameter(ClassName.get(Class.class), "clazz")
+                .addParameter(TypeName.BOOLEAN, "distinct")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "columns")
+                .addParameter(ClassName.get(String.class), "selection")
+                .addParameter(ArrayTypeName.of(ClassName.get(String.class)), "selectionArgs")
+                .addParameter(ClassName.get(String.class), "groupBy")
+                .addParameter(ClassName.get(String.class), "having")
+                .addParameter(ClassName.get(String.class), "orderBy")
+                .addParameter(ClassName.get(String.class), "limit");
+
+        for (TableInfo table : tables) {
+
+            String daoField = table.getDaoClassName().replace("$$", "").toLowerCase();
+
+            queryMethodBuidler.addStatement("if($L.class.equals(clazz)) return $L.rawQuery(distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit)", table.getClassName(), daoField);
         }
 
         queryMethodBuidler.addStatement("return null");

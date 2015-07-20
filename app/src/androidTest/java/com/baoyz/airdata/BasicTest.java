@@ -41,6 +41,13 @@ public class BasicTest extends ApplicationTestCase<Application> {
         super(Application.class);
     }
 
+    public void testAll(){
+        testInsert();
+        testUpdate();
+        testDelete();
+        testSelect();
+    }
+
     public void testInsert() {
         Student stu = new Student();
         stu.setName("Jack");
@@ -77,5 +84,11 @@ public class BasicTest extends ApplicationTestCase<Application> {
             System.out.println(student);
         }
         assertTrue(list.size() > 0);
+    }
+
+    public void testCount() {
+        int count = new Select<Student>(new MyDatabase(getContext())).from(Student.class).count();
+        List<Student> list = new Select<Student>(new MyDatabase(getContext())).from(Student.class).list();
+        assertTrue(count > 0 && list.size() == count);
     }
 }
