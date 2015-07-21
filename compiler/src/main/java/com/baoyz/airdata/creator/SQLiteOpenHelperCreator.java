@@ -196,7 +196,6 @@ public class SQLiteOpenHelperCreator {
                 Migration migration = enclosedElement.getAnnotation(Migration.class);
                 if (migration != null) {
                     // is method element
-                    System.out.println("..........." + enclosedElement.getSimpleName().toString());
                     migrations.put(migration.version(), enclosedElement.getSimpleName().toString());
                 }
             }
