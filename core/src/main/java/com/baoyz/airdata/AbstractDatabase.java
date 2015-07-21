@@ -43,7 +43,7 @@ public abstract class AbstractDatabase {
             // TODO throw exception
         }
         mContext = context;
-        mDatabaseHelper = new AirDatabaseHelperImpl(mContext);
+        mDatabaseHelper = new AirDatabaseHelperImpl(mContext, this);
     }
 
     public SQLiteDatabase getDatabase() {

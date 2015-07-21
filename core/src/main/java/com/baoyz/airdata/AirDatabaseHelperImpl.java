@@ -35,10 +35,7 @@ import java.util.List;
  */
 public class AirDatabaseHelperImpl implements AirDatabaseHelper {
 
-    private Context mContext;
-
-    public AirDatabaseHelperImpl(Context mContext) {
-        this.mContext = mContext;
+    public AirDatabaseHelperImpl(Context mContext, AbstractDatabase airDb) {
     }
 
     @Override

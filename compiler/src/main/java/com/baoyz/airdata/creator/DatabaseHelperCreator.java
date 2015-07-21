@@ -24,6 +24,7 @@
 package com.baoyz.airdata.creator;
 
 
+import com.baoyz.airdata.AbstractDatabase;
 import com.baoyz.airdata.AirDatabaseHelper;
 import com.baoyz.airdata.ContentValuesWrapper;
 import com.baoyz.airdata.TableInfo;
@@ -51,12 +52,14 @@ public class DatabaseHelperCreator {
     private Filer filer;
     private String packageName;
     private String className;
+    private ClassName airDbType;
 
-    public DatabaseHelperCreator(ArrayList<TableInfo> tables, Filer filer, String packageName, String className) {
+    public DatabaseHelperCreator(ArrayList<TableInfo> tables, Filer filer, String packageName, String className, ClassName airDbType) {
         this.tables = tables;
         this.filer = filer;
         this.packageName = packageName;
         this.className = className;
+        this.airDbType = airDbType;
     }
 
     public void create() {
@@ -67,7 +70,8 @@ public class DatabaseHelperCreator {
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get("android.content", "Context"), "context")
-                .addStatement("this.helper = new $T(context)", ClassName.get(packageName, className))
+                .addParameter(ClassName.get(AbstractDatabase.class), "airDb")
+                .addStatement("this.helper = new $T(context, ($T)airDb)", ClassName.get(packageName, className), airDbType)
                 .addStatement("this.database = this.helper.getWritableDatabase()");
 
 

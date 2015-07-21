@@ -21,40 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.baoyz.airdata;
+package com.baoyz.airdata.annotation;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import com.baoyz.airdata.annotation.Database;
-import com.baoyz.airdata.annotation.Migration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * AirData
- * Created by baoyz on 15/6/28.
+ * Created by baoyz on 15/7/21.
  */
-@Database(name = "mydatabase", version = 4)
-public class MyDatabase extends AbstractDatabase {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.METHOD)
+public @interface Migration {
 
-    public static final String TAG = MyDatabase.class.getSimpleName();
-
-    public MyDatabase(Context context) {
-        super(context);
-    }
-
-    @Migration(version = 2)
-    public void upgradeVersion2(SQLiteDatabase database) {
-        Log.d(TAG, "upgrade version 2");
-    }
-
-    @Migration(version = 3)
-    public void upgradeVersion3(SQLiteDatabase database) {
-        Log.d(TAG, "upgrade version 3");
-    }
-
-    @Migration(version = 4)
-    public void upgradeVersion4(SQLiteDatabase database) {
-        Log.d(TAG, "upgrade version 4");
-    }
+    int version();
 }

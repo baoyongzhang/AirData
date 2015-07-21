@@ -23,11 +23,12 @@
  */
 package com.baoyz.airdata.creator;
 
+import com.baoyz.airdata.AbstractDatabase;
 import com.baoyz.airdata.ColumnInfo;
 import com.baoyz.airdata.TableInfo;
 import com.baoyz.airdata.annotation.ColumnIgnore;
 import com.baoyz.airdata.annotation.Database;
-import com.baoyz.airdata.annotation.PrimaryKey;
+import com.baoyz.airdata.annotation.Migration;
 import com.baoyz.airdata.annotation.Table;
 import com.baoyz.airdata.utils.LogUtils;
 import com.baoyz.airdata.utils.Utils;
@@ -38,7 +39,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
@@ -59,6 +62,7 @@ public class SQLiteOpenHelperCreator {
     private String name;
     private int version;
     private String qualifiedName;
+    private Map<Integer, String> migrations;
 
     public SQLiteOpenHelperCreator(Filer filer) {
         this.filer = filer;
@@ -76,10 +80,19 @@ public class SQLiteOpenHelperCreator {
 
     private void generate() {
         // generate SQLiteOpenHelper
+
+        String packageName = qualifiedName
+                .substring(0, qualifiedName.lastIndexOf("."));
+        String airDbClassName = qualifiedName.substring(packageName.length() + 1);
+        String className = airDbClassName + "$$Helper";
+
+        ClassName airDbType = ClassName.get(packageName, airDbClassName);
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get("android.content", "Context"), "context")
+                .addParameter(airDbType, "airDb")
                 .addStatement("super(context, $S, null, $L)", name, version)
+                .addStatement("this.airDb = airDb")
                 .build();
 
         MethodSpec.Builder onCreateBuilder = MethodSpec.methodBuilder("onCreate")
@@ -97,25 +110,29 @@ public class SQLiteOpenHelperCreator {
 
         MethodSpec onCreate = onCreateBuilder.build();
 
-        MethodSpec onUpgrade = MethodSpec.methodBuilder("onUpgrade")
+        MethodSpec.Builder onUpgradeBuilder = MethodSpec.methodBuilder("onUpgrade")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .returns(TypeName.VOID)
                 .addParameter(ClassName.get("android.database.sqlite", "SQLiteDatabase"), "db")
                 .addParameter(TypeName.INT, "oldVersion")
-                .addParameter(TypeName.INT, "newVersion")
-                .build();
+                .addParameter(TypeName.INT, "newVersion");
 
-        String packageName = qualifiedName
-                .substring(0, qualifiedName.lastIndexOf("."));
-        String className = qualifiedName.substring(packageName.length() + 1) + "$$Helper";
+        for (Integer version : migrations.keySet()) {
+            String methodName = migrations.get(version);
+            onUpgradeBuilder
+                    .addCode("if($L > oldVersion && $L <= newVersion) {", version, version)
+                    .addCode("  this.airDb.$L(db);", methodName)
+                    .addCode("}");
+        }
 
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
                 .superclass(ClassName.get("android.database.sqlite", "SQLiteOpenHelper"))
                 .addModifiers(Modifier.PUBLIC)
+                .addField(airDbType, "airDb", Modifier.PRIVATE)
                 .addMethod(constructor)
                 .addMethod(onCreate)
-                .addMethod(onUpgrade)
+                .addMethod(onUpgradeBuilder.build())
                 .build();
 
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec)
@@ -134,7 +151,7 @@ public class SQLiteOpenHelperCreator {
             daoCreator.create();
         }
 
-        DatabaseHelperCreator databaseHelperCreator = new DatabaseHelperCreator(tables, filer, packageName, className);
+        DatabaseHelperCreator databaseHelperCreator = new DatabaseHelperCreator(tables, filer, packageName, className, airDbType);
         databaseHelperCreator.create();
 
     }
@@ -171,6 +188,18 @@ public class SQLiteOpenHelperCreator {
             name = getDatabaseName(element);
             version = getDatabaseVersion(element);
             qualifiedName = element.getQualifiedName().toString();
+
+            // process Migration
+            migrations = new HashMap<Integer, String>();
+            List<? extends Element> enclosedElements = element.getEnclosedElements();
+            for (Element enclosedElement : enclosedElements) {
+                Migration migration = enclosedElement.getAnnotation(Migration.class);
+                if (migration != null) {
+                    // is method element
+                    System.out.println("..........." + enclosedElement.getSimpleName().toString());
+                    migrations.put(migration.version(), enclosedElement.getSimpleName().toString());
+                }
+            }
         }
     }
 
