@@ -42,14 +42,14 @@ public class UpdateTest extends ApplicationTestCase<Application> {
 
     public void testUpdateAll() {
         MyDatabase database = new MyDatabase(getContext());
-        long update = new Update<Student>(database).from(Student.class).set("mark", 'T').set("score", 60).execute();
+        long update = new Update(database).from(Student.class).set("mark", 'T').set("score", 60).execute();
         assertTrue(update > 0);
     }
 
     public void testUpdateById() {
         MyDatabase database = new MyDatabase(getContext());
         int id = new Select<Student>(database).from(Student.class).single().getId();
-        long update = new Update<Student>(database)
+        long update = new Update(database)
                 .from(Student.class)
                 .set("mark", 'D')
                 .set("score", 70)

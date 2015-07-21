@@ -33,9 +33,9 @@ import com.baoyz.airdata.ContentValuesWrapper;
  * AirData
  * Created by baoyz on 15/7/19.
  */
-public class Update<T> {
+public class Update {
 
-    private Class<T> table;
+    private Class table;
     private String where;
     private String[] whereArgs;
     private ContentValuesWrapper values;
@@ -49,12 +49,12 @@ public class Update<T> {
         values = ContentValuesWrapper.wrap(new ContentValues());
     }
 
-    public Update<T> from(Class<T> table) {
+    public Update from(Class table) {
         this.table = table;
         return this;
     }
 
-    public Update<T> where(String where, Object... whereArgs) {
+    public Update where(String where, Object... whereArgs) {
         this.where = where;
         if (whereArgs != null) {
             this.whereArgs = new String[whereArgs.length];
@@ -66,62 +66,62 @@ public class Update<T> {
         return this;
     }
 
-    public Update<T> set(String name, Boolean value) {
+    public Update set(String name, Boolean value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Byte value) {
+    public Update set(String name, Byte value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Short value) {
+    public Update set(String name, Short value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Integer value) {
+    public Update set(String name, Integer value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Long value) {
+    public Update set(String name, Long value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Double value) {
+    public Update set(String name, Double value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Float value) {
+    public Update set(String name, Float value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, String value) {
+    public Update set(String name, String value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, byte[] value) {
+    public Update set(String name, byte[] value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Byte[] value) {
+    public Update set(String name, Byte[] value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, char value) {
+    public Update set(String name, char value) {
         values.put(name, value);
         return this;
     }
 
-    public Update<T> set(String name, Character value) {
+    public Update set(String name, Character value) {
         values.put(name, value);
         return this;
     }

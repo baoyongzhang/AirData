@@ -61,7 +61,7 @@ public class BasicTest extends ApplicationTestCase<Application> {
 
     public void testUpdate() {
         MyDatabase database = new MyDatabase(getContext());
-        Student single = (Student) new Select<Student>(database).from(Student.class).single();
+        Student single = new Select<Student>(database).from(Student.class).single();
         single.setName("updateName");
 
         long update = database.update(single);
@@ -71,7 +71,7 @@ public class BasicTest extends ApplicationTestCase<Application> {
 
     public void testDelete() {
         MyDatabase database = new MyDatabase(getContext());
-        Student single = (Student) new Select<Student>(database).from(Student.class).single();
+        Student single = new Select<Student>(database).from(Student.class).single();
 
         long delete = database.delete(single);
 

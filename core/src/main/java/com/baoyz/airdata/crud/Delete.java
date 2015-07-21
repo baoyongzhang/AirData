@@ -30,9 +30,9 @@ import com.baoyz.airdata.AirDatabaseHelper;
  * AirData
  * Created by baoyz on 15/7/19.
  */
-public class Delete<T> {
+public class Delete {
 
-    private Class<T> table;
+    private Class<?> table;
     private String where;
     private String[] whereArgs;
 
@@ -44,12 +44,12 @@ public class Delete<T> {
         this.helper = database.getDatabaseHelper();
     }
 
-    public Delete<T> from(Class<T> table) {
+    public Delete from(Class<?> table) {
         this.table = table;
         return this;
     }
 
-    public Delete<T> where(String where, String... whereArgs) {
+    public Delete where(String where, String... whereArgs) {
         this.where = where;
         this.whereArgs = whereArgs;
         return this;
