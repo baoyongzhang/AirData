@@ -50,8 +50,7 @@ public class Select<T> {
     private String groupBy;
     private String having;
     private String orderBy;
-    private Integer limit;
-    private Integer offest;
+    private String limit;
 
     private AbstractDatabase database;
     private AirDatabaseHelper helper;
@@ -97,25 +96,15 @@ public class Select<T> {
         return this;
     }
 
-    public Select<T> limit(int limit) {
+    public Select<T> limit(String limit) {
         this.limit = limit;
         return this;
     }
 
-    public Select<T> offset(int offset) {
-        this.offest = offset;
-        return this;
-    }
-
     public int count() {
-        String limitString = limit == null ? null : limit.toString();
-        if (offest != null) {
-            limitString += ", " + offest;
-        }
-
         columns = new String[]{"COUNT(*)"};
 
-        Cursor cursor = helper.rawQuery(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limitString);
+        Cursor cursor = helper.rawQuery(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
         if (cursor.moveToFirst()) {
             return cursor.getInt(0);
         }
@@ -132,12 +121,7 @@ public class Select<T> {
     }
 
     public List<T> list() {
-        String limitString = limit == null ? null : limit.toString();
-        if (offest != null) {
-            limitString += ", " + offest;
-        }
-
-        List<T> result = helper.query(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limitString);
+        List<T> result = helper.query(table, distinct, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
         return result;
     }
 

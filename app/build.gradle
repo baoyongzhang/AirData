@@ -19,6 +19,11 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
@@ -26,4 +31,5 @@ dependencies {
     compile project(':core')
     compile 'com.baoyz.actionsheet:library:1.1.0'
     compile 'com.squareup:javapoet:1.1.0'
+    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 }
