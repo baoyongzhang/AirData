@@ -121,6 +121,9 @@ List<Student> list = database.query(Student.class);
 上面的那些废话看看就好，如果你想使用本库的话（仅供测试），可以添加以下依赖
 
 ```groovy
+repositories {
+    maven { url "http://dl.bintray.com/baoyongzhang/maven/" }
+}
 dependencies {
     provided 'com.baoyz.airdata:compiler:0.1.0'
     compile 'com.baoyz.airdata:core:0.1.0'
