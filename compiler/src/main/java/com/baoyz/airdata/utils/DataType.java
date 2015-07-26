@@ -57,6 +57,7 @@ public class DataType {
             put("java.lang.Character", SQLiteType.TEXT);
             put("java.lang.String", SQLiteType.TEXT);
             put("java.lang.Byte[]", SQLiteType.BLOB);
+            put("java.util.Date", SQLiteType.INTEGER);
         }
     };
 
@@ -89,6 +90,7 @@ public class DataType {
             put("java.lang.Character", "getChar");
             put("java.lang.String", "getString");
             put("java.lang.Byte[]", "getBytes");
+            put("java.util.Date", "getDate");
         }
     };
 

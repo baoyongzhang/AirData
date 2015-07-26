@@ -2,6 +2,8 @@ package com.baoyz.airdata;
 
 import android.database.Cursor;
 
+import java.util.Date;
+
 /**
  * Created by baoyz on 15/7/17.
  */
@@ -63,6 +65,10 @@ public class CursorWrapper {
         Byte[] bytes = new Byte[arr.length];
         System.arraycopy(arr, 0, bytes, 0, arr.length);
         return bytes;
+    }
+
+    public Date getDate(int index) {
+        return new Date(getLong(index));
     }
 
 }

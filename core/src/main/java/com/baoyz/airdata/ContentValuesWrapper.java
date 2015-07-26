@@ -25,6 +25,8 @@ package com.baoyz.airdata;
 
 import android.content.ContentValues;
 
+import java.util.Date;
+
 /**
  * AirData
  * Created by baoyz on 15/7/18.
@@ -95,6 +97,14 @@ public class ContentValuesWrapper {
             return;
         }
         put(key, (char) value);
+    }
+
+    public void put(String key, Date value) {
+        if (value == null) {
+            values.putNull(key);
+            return;
+        }
+        values.put(key, value.getTime());
     }
 
     public ContentValues getValues() {

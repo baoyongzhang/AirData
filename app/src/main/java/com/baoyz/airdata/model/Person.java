@@ -27,6 +27,7 @@ import com.baoyz.airdata.annotation.ColumnIgnore;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.annotation.Table;
 
+import java.util.Date;
 import java.util.Arrays;
 
 /**
@@ -68,7 +69,7 @@ public class Person {
     @ColumnIgnore
     private Boolean bool2;
 
-//    private Date date;
+    public Date date;
 
     public int getId() {
         return id;

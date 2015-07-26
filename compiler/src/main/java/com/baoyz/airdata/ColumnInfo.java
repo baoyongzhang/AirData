@@ -26,6 +26,7 @@ package com.baoyz.airdata;
 import com.baoyz.airdata.annotation.Column;
 import com.baoyz.airdata.annotation.PrimaryKey;
 import com.baoyz.airdata.utils.DataType;
+import com.baoyz.airdata.utils.LogUtils;
 import com.baoyz.airdata.utils.Utils;
 
 import javax.lang.model.element.VariableElement;
@@ -48,6 +49,8 @@ public class ColumnInfo {
     public ColumnInfo(VariableElement columnElement) {
 
         typeMirror = columnElement.asType();
+
+        LogUtils.debug("" + typeMirror);
 
         setType(DataType.getTypeString(typeMirror));
 

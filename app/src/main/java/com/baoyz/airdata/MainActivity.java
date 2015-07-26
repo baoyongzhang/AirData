@@ -25,24 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
         mResultTv = (TextView) findViewById(R.id.tv_result);
 
-//        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-//        View view = new View(this);
-//        view.setBackgroundColor(Color.argb(0x55, 0x00, 0x00, 0x00));
-//        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-//        params.type = WindowManager.LayoutParams.TYPE_PHONE;
-//        params.gravity = Gravity.TOP | Gravity.LEFT;
-//        params.alpha = 0.3f;
-//        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-//        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-//        wm.addView(view, params);
-//
-//        view.buildDrawingCache();
-//        try {
-//            view.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream("/sdcard/screen.png"));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     public void updatePerson(View view) {
