@@ -119,6 +119,10 @@ public class DataType {
         return METHOD_MAP.get(type.toString());
     }
 
+    public static boolean isSupport(TypeMirror type) {
+        return getCursorMethod(type) != null;
+    }
+
     public static ValueSerializer getSerializer(TypeMirror type) {
         return null;
     }

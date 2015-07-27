@@ -116,7 +116,7 @@ public class DAOCreator {
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
-            if (column.isPrimaryKey())
+            if (column.isPrimaryKey() || !DataType.isSupport(column.getTypeMirror()))
                 continue;
             insertBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
@@ -135,7 +135,7 @@ public class DAOCreator {
 
         List<ColumnInfo> columns = table.getColumns();
         for (ColumnInfo column : columns) {
-            if (column.isPrimaryKey())
+            if (column.isPrimaryKey() || !DataType.isSupport(column.getTypeMirror()))
                 continue;
             updateBuilder.addStatement("valuesWrapper.put($S, bean.$L)", column.getName(), column.getGetter());
         }
@@ -238,7 +238,10 @@ public class DAOCreator {
         List<ColumnInfo> columns = table.getColumns();
         for (int i = 0; i < columns.size(); i++) {
             ColumnInfo column = columns.get(i);
-            fillDataMethod.addStatement("bean." + column.getSetter(), "cursorWrapper." + DataType.getCursorMethod(column.getTypeMirror()) + "(" + i + ")");
+            String cursorMethod = DataType.getCursorMethod(column.getTypeMirror());
+            if (cursorMethod == null)
+                continue;
+            fillDataMethod.addStatement("bean." + column.getSetter(), "cursorWrapper." + cursorMethod + "(" + i + ")");
         }
 
         fillDataMethod.addStatement("return bean");

@@ -29,6 +29,7 @@ import com.baoyz.airdata.annotation.Table;
 
 import java.util.Date;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * AirData
@@ -69,7 +70,9 @@ public class Person {
     @ColumnIgnore
     private Boolean bool2;
 
-    public Date date;
+    private Date date;
+
+    public List list;
 
     public int getId() {
         return id;
@@ -221,6 +224,14 @@ public class Person {
 
     public void setBool2(Boolean bool2) {
         this.bool2 = bool2;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override

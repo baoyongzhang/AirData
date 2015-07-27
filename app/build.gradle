@@ -20,9 +20,7 @@ android {
 }
 
 repositories {
-//    mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "http://dl.bintray.com/baoyongzhang/maven/" }
 }
 
 dependencies {
@@ -30,7 +28,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     provided project(':compiler')
     compile project(':core')
-    compile 'com.baoyz.actionsheet:library:1.1.0'
     compile 'com.squareup:javapoet:1.1.0'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+//    provided 'com.baoyz.airdata:compiler:0.1.0'
+//    compile 'com.baoyz.airdata:core:0.1.0'
 }
