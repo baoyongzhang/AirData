@@ -43,8 +43,7 @@ import javax.lang.model.element.TypeElement;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes({
-        "com.baoyz.airdata.annotation.Database",
-        "com.baoyz.airdata.annotation.Table"
+        "com.baoyz.airdata.annotation.Database"
 })
 public class AirDataProcessor extends AbstractProcessor {
 
@@ -64,6 +63,7 @@ public class AirDataProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         SQLiteOpenHelperCreator sqLiteOpenHelperCreator = new SQLiteOpenHelperCreator(filer);
         sqLiteOpenHelperCreator.create(roundEnv);
+        //
         return true;
     }
 }
