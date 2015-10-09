@@ -40,16 +40,14 @@ public class Update {
     private String[] whereArgs;
     private ContentValuesWrapper values;
 
-    private AbstractDatabase database;
     private AirDatabaseHelper helper;
 
     public Update(AbstractDatabase database) {
-        this.database = database;
         this.helper = database.getDatabaseHelper();
         values = ContentValuesWrapper.wrap(new ContentValues());
     }
 
-    public Update from(Class table) {
+    public Update table(Class table) {
         this.table = table;
         return this;
     }
