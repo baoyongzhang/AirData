@@ -1,1 +1,1 @@
-include ':app', ':core', ':compiler'
+include ':app', ':core', ':compiler', ':rx'
